@@ -21,5 +21,5 @@ COVID19 Kaggle Challenge
     
 World Health Organization - many different datasets: Global research on coronavirus disease (COVID-19)
 
-    https://www.who.int/emergencies/diseases/novel-coronavirus-2019/global-research-on-novel-coronavirus-2019-ncov
+https://www.who.int/emergencies/diseases/novel-coronavirus-2019/global-research-on-novel-coronavirus-2019-ncov
 
