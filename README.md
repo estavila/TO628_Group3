@@ -23,3 +23,8 @@ World Health Organization - many different datasets: Global research on coronavi
 
 https://www.who.int/emergencies/diseases/novel-coronavirus-2019/global-research-on-novel-coronavirus-2019-ncov
 
+
+Data on Japan, South Korea, and Hong Kong (countries with high mask-wearing culture)
+    https://www.kaggle.com/sudalairajkumar/novel-corona-virus-2019-dataset/discussion/141083 - Japan
+    https://www.kaggle.com/kimjihoo/coronavirusdataset - South Korea
+    https://data.gov.hk/en-data/dataset/hk-dh-chpsebcddr-novel-infectious-agent - Hong Kong
