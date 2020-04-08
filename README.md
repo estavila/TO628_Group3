@@ -34,5 +34,6 @@ https://www.bsg.ox.ac.uk/research/research-projects/oxford-covid-19-government-r
 Google repository of public Covid datasets like Johns Hopkins Center for Systems Science and Engineering (JHU CSSE), the US Census Bureau's American Community Survey (ACS), and OpenStreetMaps data free to access and analyze through this COVID-19 Public Dataset Program.
 https://console.cloud.google.com/marketplace/details/bigquery-public-datasets/covid19-dataset-list?preview=bigquery-public-datasets
 
+
 US counties COVID 19 dataset
 https://www.kaggle.com/fireballbyedimyrnmom/us-counties-covid-19-dataset
