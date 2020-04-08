@@ -44,7 +44,7 @@ https://www.bsg.ox.ac.uk/research/research-projects/oxford-covid-19-government-r
 
 ## Data Exploration
 ### Read File
-Read file in.Noticed it has a lot of "Notes" columns used to supply source of change in variable. So we removed those columns to facilitate initial data exploration.
+Read file in.Noticed it has a lot of "Notes" columns used to supply source of change in variable.
 
 ```{r ,}
 data = read.csv("OxCGRT_Download_080420_161822_Full.csv")
@@ -52,7 +52,7 @@ names(data)
 ```
 
 ### Filtered DataFrame
-Noticed the data has a lot of "Notes" columns used to supply source of change in variable. So we removed those columns to facilitate initial data exploration.
+We removed those columns to facilitate initial data exploration.
 
 ```{r ,}
 df = subset( data, select = -c(grep( "Notes" , names( data ) )) )

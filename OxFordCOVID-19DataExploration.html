@@ -405,7 +405,7 @@ summary {
 <h2>Data Exploration</h2>
 <div id="read-file" class="section level3">
 <h3>Read File</h3>
-<p>Read file in.Noticed it has a lot of “Notes” columns used to supply source of change in variable. So we removed those columns to facilitate initial data exploration.</p>
+<p>Read file in.Noticed it has a lot of “Notes” columns used to supply source of change in variable.</p>
 <pre class="r"><code>data = read.csv(&quot;OxCGRT_Download_080420_161822_Full.csv&quot;)
 names(data)</code></pre>
 <pre><code>##  [1] &quot;CountryName&quot;                            
@@ -451,7 +451,7 @@ names(data)</code></pre>
 </div>
 <div id="filtered-dataframe" class="section level3">
 <h3>Filtered DataFrame</h3>
-<p>Noticed the data has a lot of “Notes” columns used to supply source of change in variable. So we removed those columns to facilitate initial data exploration.</p>
+<p>We removed those columns to facilitate initial data exploration.</p>
 <pre class="r"><code>df = subset( data, select = -c(grep( &quot;Notes&quot; , names( data ) )) )
 names(df)</code></pre>
 <pre><code>##  [1] &quot;CountryName&quot;                            
