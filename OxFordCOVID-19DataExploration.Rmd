@@ -78,5 +78,5 @@ To explore the notes data, we just peaked into one of the columns to see what ki
 df_notes = subset( data, select = c(grep( "Notes" , names( data ) )) )
 names(df_notes)
 str(df_notes)
-levels(df_notes$S1_Notes)
+levels(df_notes$S1_Notes)[1:5]
 ```
