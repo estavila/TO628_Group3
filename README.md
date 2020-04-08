@@ -37,3 +37,7 @@ https://console.cloud.google.com/marketplace/details/bigquery-public-datasets/co
 
 US counties COVID 19 dataset
 https://www.kaggle.com/fireballbyedimyrnmom/us-counties-covid-19-dataset
+
+
+Korea Covid-19 Dataset (both on micro and macro level):
+https://www.kaggle.com/kimjihoo/coronavirusdataset#SeoulFloating.csv
