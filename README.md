@@ -22,7 +22,7 @@ COVID19 Kaggle Challenge
 
 Data on Japan, South Korea, and Hong Kong (countries with high mask-wearing culture)
     https://www.kaggle.com/sudalairajkumar/novel-corona-virus-2019-dataset/discussion/141083 - Japan
-    https://www.kaggle.com/kimjihoo/coronavirusdataset - South Korea
+    https://www.kaggle.com/kimjihoo/coronavirusdataset - South Korea <-- Meitong also found this; this is both on individual and macro level
     https://data.gov.hk/en-data/dataset/hk-dh-chpsebcddr-novel-infectious-agent - Hong Kong
 
 Harvard Dataverse > China Data Lab Dataverse > Resources for COVID-19 (many deifferent datasets)
@@ -39,5 +39,4 @@ US counties COVID 19 dataset
 https://www.kaggle.com/fireballbyedimyrnmom/us-counties-covid-19-dataset
 
 
-Korea Covid-19 Dataset (both on micro and macro level):
-https://www.kaggle.com/kimjihoo/coronavirusdataset#SeoulFloating.csv
+
