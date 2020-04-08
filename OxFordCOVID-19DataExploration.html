@@ -368,31 +368,41 @@ summary {
 </div>
 
 
-<div id="data-source" class="section level2">
-<h2>Data Source</h2>
+<div id="data-source-summary" class="section level2">
+<h2>Data Source &amp; Summary</h2>
 <p>OXFORD COVID-19 GOVERNMENT RESPONSE TRACKER: aims to track and compare government responses to the coronavirus outbreak worldwide rigorously and consistently. We can analyze how specific government measures affect outcomes in terms of COVID cases and deaths. <a href="https://www.bsg.ox.ac.uk/research/research-projects/oxford-covid-19-government-response-tracker" class="uri">https://www.bsg.ox.ac.uk/research/research-projects/oxford-covid-19-government-response-tracker</a></p>
-<p>13 Measures Tracked by Oxford:</p>
-<p>S1_School closing</p>
-<p>S2_Workplace closing</p>
-<p>S3_Cancel public events</p>
-<p>S4_Close public transport</p>
-<p>S5_Public information campaigns</p>
-<p>S6_Restrictions on internal movement</p>
-<p>S7_International travel controls</p>
-<p>S8_Fiscal measures</p>
-<p>S9_Monetary measures</p>
-<p>S10_Emergency investment in health care</p>
-<p>S11_Investment in Vaccines</p>
-<p>S12_Testing framework</p>
-<p>S13_Contact tracing</p>
-<p>ConfirmedCases</p>
-<p>ConfirmedDeaths</p>
-<p>StringencyIndex</p>
-<p>Interesting analysis of Oxford data: <a href="https://www.bsg.ox.ac.uk/research/research-projects/oxford-covid-19-government-response-tracker?ref=researchstash" class="uri">https://www.bsg.ox.ac.uk/research/research-projects/oxford-covid-19-government-response-tracker?ref=researchstash</a></p>
-<p>Oxford has a StringencyIndex that measures how stringent each government has reacted. I thought, maybe we can introduce Proactivity index - how many measures country has introduced before first ConfirmedCase and first ConfirmedDeath. I assume this affects the outcomes as well. Then one of our questiond would be: What has been more effective stringency or proactivity?</p>
+<div id="measures-tracked-by-oxford" class="section level4">
+<h4>13 Measures Tracked by Oxford:</h4>
+<ul>
+<li>S1_School closing</li>
+<li>S2_Workplace closing</li>
+<li>S3_Cancel public events</li>
+<li>S4_Close public transport</li>
+<li>S5_Public information campaigns</li>
+<li>S6_Restrictions on internal movement</li>
+<li>S7_International travel controls</li>
+<li>S8_Fiscal measures</li>
+<li>S9_Monetary measures</li>
+<li>S10_Emergency investment in health care</li>
+<li>S11_Investment in Vaccines</li>
+<li>S12_Testing framework</li>
+<li>S13_Contact tracing</li>
+</ul>
+<p>OxCGRT collects publicly available information on 13 indicators of government response (S1-S13). Nine of the indicators (S1-S7, S12 and S13) take policies such as school closures, travel bans, etc. are recorded on an ordinal scale; the remainder (S8-S11) are financial indicators such as fiscal or monetary measures.</p>
 </div>
-<div id="data-explore" class="section level2">
-<h2>Data Explore</h2>
+<div id="other-data-in-dataset" class="section level4">
+<h4>Other data in dataset:</h4>
+<ul>
+<li>ConfirmedCases</li>
+<li>ConfirmedDeaths</li>
+<li>StringencyIndex</li>
+</ul>
+<p>Oxford has a StringencyIndex that measures how stringent each government has reacted. I thought, maybe we can introduce Proactivity index - how many measures country has introduced before first ConfirmedCase and first ConfirmedDeath. I assume this affects the outcomes as well. Then one of our questiond would be: What has been more effective stringency or proactivity?</p>
+<p>Interesting analysis of Oxford data: <a href="https://www.bsg.ox.ac.uk/research/research-projects/oxford-covid-19-government-response-tracker?ref=researchstash" class="uri">https://www.bsg.ox.ac.uk/research/research-projects/oxford-covid-19-government-response-tracker?ref=researchstash</a></p>
+</div>
+</div>
+<div id="data-exploration" class="section level2">
+<h2>Data Exploration</h2>
 <div id="read-file" class="section level3">
 <h3>Read File</h3>
 <p>Read file in.Noticed it has a lot of “Notes” columns used to supply source of change in variable. So we removed those columns to facilitate initial data exploration.</p>

@@ -8,51 +8,41 @@ author: "Estefania Avila, Meitong Hu, Egle Klekere, Alla Polishchuk, Jingjing Zh
 knitr::opts_chunk$set(echo = TRUE)
 ```
 
-## Data Source
+## Data Source & Summary
 
 OXFORD COVID-19 GOVERNMENT RESPONSE TRACKER: aims to track and compare government responses to the coronavirus outbreak worldwide rigorously and consistently. We can analyze how specific government measures affect outcomes in terms of COVID cases and deaths.
 https://www.bsg.ox.ac.uk/research/research-projects/oxford-covid-19-government-response-tracker
 
-13 Measures Tracked by Oxford:
+#### 13 Measures Tracked by Oxford:
 
-S1_School closing
+* S1_School closing
+* S2_Workplace closing
+* S3_Cancel public events
+* S4_Close public transport
+* S5_Public information campaigns
+* S6_Restrictions on internal movement
+* S7_International travel controls
+* S8_Fiscal measures
+* S9_Monetary measures
+* S10_Emergency investment in health care
+* S11_Investment in Vaccines
+* S12_Testing framework
+* S13_Contact tracing
 
-S2_Workplace closing
+OxCGRT collects publicly available information on 13 indicators of government response (S1-S13). Nine of the indicators (S1-S7, S12 and S13) take policies such as school closures, travel bans, etc. are recorded on an ordinal scale; the remainder (S8-S11) are financial indicators such as fiscal or monetary measures.
 
-S3_Cancel public events
+#### Other data in dataset:
 
-S4_Close public transport
+* ConfirmedCases
+* ConfirmedDeaths
+* StringencyIndex
 
-S5_Public information campaigns
-
-S6_Restrictions on internal movement
-
-S7_International travel controls
-
-S8_Fiscal measures
-
-S9_Monetary measures
-
-S10_Emergency investment in health care
-
-S11_Investment in Vaccines
-
-S12_Testing framework
-
-S13_Contact tracing
-
-ConfirmedCases
-
-ConfirmedDeaths
-
-StringencyIndex
+Oxford has a StringencyIndex that measures how stringent each government has reacted. I thought, maybe we can introduce Proactivity index - how many measures country has introduced before first ConfirmedCase and first ConfirmedDeath. I assume this affects the outcomes as well. Then one of our questiond would be: What has been more effective stringency or proactivity?
 
 Interesting analysis of Oxford data:
 https://www.bsg.ox.ac.uk/research/research-projects/oxford-covid-19-government-response-tracker?ref=researchstash
 
-Oxford has a StringencyIndex that measures how stringent each government has reacted. I thought, maybe we can introduce Proactivity index - how many measures country has introduced before first ConfirmedCase and first ConfirmedDeath. I assume this affects the outcomes as well. Then one of our questiond would be: What has been more effective stringency or proactivity?
-
-## Data Explore
+## Data Exploration
 ### Read File
 Read file in.Noticed it has a lot of "Notes" columns used to supply source of change in variable. So we removed those columns to facilitate initial data exploration.
 
