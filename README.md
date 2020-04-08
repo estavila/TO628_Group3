@@ -1,6 +1,6 @@
 # TO628_Group3
 
-### Authors: Estefania Avila, Meitong Hu, Egle Klekere
+### Authors: Estefania Avila, Meitong Hu, Egle Klekere, Alla Polishchuk
 
 ## Project Ideas/Topics/Datasets:
 
