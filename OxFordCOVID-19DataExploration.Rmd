@@ -70,3 +70,6 @@ names(df_notes)
 str(df_notes)
 levels(df_notes$S1_Notes)[1:5]
 ```
+## Potential Questions to Explore:
+
+* Which measures were most effective for which countries?
