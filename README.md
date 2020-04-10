@@ -64,5 +64,16 @@ https://console.cloud.google.com/marketplace/details/bigquery-public-datasets/co
 US counties COVID 19 dataset
 https://www.kaggle.com/fireballbyedimyrnmom/us-counties-covid-19-dataset
 
+COVID19 in Belgium_death (date, province,region, age group, sex, death)
+https://data.world/liz-friedman/covid-19-in-belgium/workspace/file?filename=COVID19BE_MORT.csv
+
+COVID19 in Belgium_cases (date, province,region, age group, sex, cases)
+https://data.world/liz-friedman/covid-19-in-belgium/workspace/file?filename=COVID19BE_CASES_AGESEX.csv
+
+COVID19 in the US_historical data by state
+https://data.world/liz-friedman/covid-tracking-project-data/workspace/file?filename=States+-+historical
+
+COVID19 in France_cases & death (sex, date, # of people hospitalized, # of people returned home, # of deaths)
+https://data.world/liz-friedman/covid-19-in-france/workspace/query?filename=hospital-data-covid&newQueryType=SQL&selectedTable=hospital_data_covid&tempId=1586502588525
 
 
