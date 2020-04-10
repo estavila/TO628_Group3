@@ -1,0 +1,35 @@
+---
+title: "COVID-19 in France & Belgium"
+author: "Jingjing Zhang"
+date: "4/10/2020"
+output: html_document
+---
+
+
+```{r}
+data_france<-read.csv("covid-19-in-france.csv")
+data_belgium_case<-read.csv("COVID19_Belgium_cases.csv")
+data_belgium_death<-read.csv("COVID19_Belgium_death.csv")
+bel_case_prop<-table(data_belgium_case$SEX,data_belgium_case$AGEGROUP)
+round(prop.table(bel_case_prop,2),2)
+table(data_belgium_case$DATE)
+plot(table(data_belgium_case$DATE)) # We may put the dates of government's policies here to measure their effectivrness.
+
+bel_death_prop<-table(data_belgium_death$SEX,data_belgium_death$AGEGROUP)
+round(prop.table(bel_death_prop,2),2) #All the deaths in 0-24 age group are female
+round(prop.table(bel_death_prop,1),2) # 62% of the female deaths are older than 75 years old; while 54% of the male deaths are older than 75 years old.
+
+m<-table(data_belgium_death$REGION,data_belgium_death$DATE)
+plot(data_belgium_death$DATE)# We may put the dates of government's policies here to measure their effectivrness.
+
+
+str(data_france)
+data_france$sexe<-as.factor(data_france$sexe)
+data_france_gender<-data_france[!(data_france$sexe=="0"),] # Delete all rows that gender is "0",
+france_death<-aggregate(dc~jour,data_france_gender,sum)
+plot(france_death) #also put the data of policy announcement to see its effectiveness 
+
+
+
+```
+
