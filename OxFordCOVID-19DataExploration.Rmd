@@ -70,9 +70,9 @@ df$Date<-data.frame(as.Date(as.character(df$Date),"%Y%m%d")) #converting integer
 
 # the two lines below didn't run for me...did you use any specific libraries?
 
-#df_0408<-filter(df,df$Date=="2020-04-08") #using the data on date 20200408
-#df_0408<-arrange(df_0408,desc(ConfirmedCases, ConfirmedDeaths))#arranging in a decreasing order of confirmed cases and confirmed deaths
-#df_0408_top30<-head(df_0408,30) #If we decide to use all 118 country data, delete this line.
+df_0408<-filter(df,df$Date=="2020-04-08") #using the data on date 20200408
+df_0408<-arrange(df_0408,desc(ConfirmedCases, ConfirmedDeaths))#arranging in a decreasing order of confirmed cases and confirmed deaths
+df_0408_top30<-head(df_0408,30) #If we decide to use all 118 country data, delete this line.
 
 ```
 
