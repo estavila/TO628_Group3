@@ -1,10 +1,11 @@
 <!DOCTYPE html>
 
-<html>
+<html xmlns="http://www.w3.org/1999/xhtml">
 
 <head>
 
 <meta charset="utf-8" />
+<meta http-equiv="Content-Type" content="text/html; charset=utf-8" />
 <meta name="generator" content="pandoc" />
 <meta http-equiv="X-UA-Compatible" content="IE=EDGE" />
 
@@ -269,6 +270,7 @@ code {
 }
 img {
   max-width:100%;
+  height: auto;
 }
 .tabbed-pane {
   padding-top: 12px;
@@ -330,7 +332,6 @@ summary {
   border: none;
   display: inline-block;
   border-radius: 4px;
-  background-color: transparent;
 }
 
 .tabset-dropdown > .nav-tabs.nav-tabs-open > li {
@@ -567,31 +568,39 @@ names(df)</code></pre>
 ##  3rd Qu.:0.000e+00                       3rd Qu.:        0         
 ##  Max.   :1.500e+11                       Max.   :826000000         
 ##  NA's   :2485                            NA's   :2754              
-##  S12_Testing.framework S13_Contact.tracing ConfirmedCases   ConfirmedDeaths  
-##  Min.   :0.0000        Min.   :0.000       Min.   :     0   Min.   :    0.0  
-##  1st Qu.:0.0000        1st Qu.:0.000       1st Qu.:     0   1st Qu.:    0.0  
-##  Median :0.0000        Median :0.000       Median :    11   Median :    0.0  
-##  Mean   :0.6109        Mean   :0.533       Mean   :  2730   Mean   :  128.9  
-##  3rd Qu.:1.0000        3rd Qu.:1.000       3rd Qu.:   228   3rd Qu.:    3.0  
-##  Max.   :3.0000        Max.   :2.000       Max.   :398809   Max.   :17129.0  
-##  NA's   :3129          NA's   :3216        NA's   :5782     NA's   :5782     
-##  StringencyIndex  StringencyIndexForDisplay    X          
-##  Min.   :  0.00   Min.   :  0.00            Mode:logical  
-##  1st Qu.:  0.00   1st Qu.:  0.00            NA's:12578    
-##  Median :  9.52   Median : 14.29                          
-##  Mean   : 24.63   Mean   : 28.86                          
-##  3rd Qu.: 42.86   3rd Qu.: 61.90                          
-##  Max.   :119.05   Max.   :119.05                          
-##  NA's   :1340     NA's   :423</code></pre>
+##  S12_Testing.framework S13_Contact.tracing ConfirmedCases  
+##  Min.   :0.0000        Min.   :0.000       Min.   :     0  
+##  1st Qu.:0.0000        1st Qu.:0.000       1st Qu.:     0  
+##  Median :0.0000        Median :0.000       Median :    11  
+##  Mean   :0.6109        Mean   :0.533       Mean   :  2730  
+##  3rd Qu.:1.0000        3rd Qu.:1.000       3rd Qu.:   228  
+##  Max.   :3.0000        Max.   :2.000       Max.   :398809  
+##  NA's   :3129          NA's   :3216        NA's   :5782    
+##  ConfirmedDeaths   StringencyIndex  StringencyIndexForDisplay
+##  Min.   :    0.0   Min.   :  0.00   Min.   :  0.00           
+##  1st Qu.:    0.0   1st Qu.:  0.00   1st Qu.:  0.00           
+##  Median :    0.0   Median :  9.52   Median : 14.29           
+##  Mean   :  128.9   Mean   : 24.63   Mean   : 28.86           
+##  3rd Qu.:    3.0   3rd Qu.: 42.86   3rd Qu.: 61.90           
+##  Max.   :17129.0   Max.   :119.05   Max.   :119.05           
+##  NA's   :5782      NA's   :1340     NA's   :423              
+##     X          
+##  Mode:logical  
+##  NA's:12578    
+##                
+##                
+##                
+##                
+## </code></pre>
 </div>
 <div id="explore-notes" class="section level3">
 <h3>Explore Notes</h3>
 <p>To explore the notes data, we just peaked into one of the columns to see what kind of announcements they are using.</p>
 <pre class="r"><code>df_notes = subset( data, select = c(grep( &quot;Notes&quot; , names( data ) )) )
 names(df_notes)</code></pre>
-<pre><code>##  [1] &quot;S1_Notes&quot;  &quot;S2_Notes&quot;  &quot;S3_Notes&quot;  &quot;S4_Notes&quot;  &quot;S5_Notes&quot;  &quot;S6_Notes&quot; 
-##  [7] &quot;S7_Notes&quot;  &quot;S8_Notes&quot;  &quot;S9_Notes&quot;  &quot;S10_Notes&quot; &quot;S11_Notes&quot; &quot;S12_Notes&quot;
-## [13] &quot;S13_Notes&quot;</code></pre>
+<pre><code>##  [1] &quot;S1_Notes&quot;  &quot;S2_Notes&quot;  &quot;S3_Notes&quot;  &quot;S4_Notes&quot;  &quot;S5_Notes&quot; 
+##  [6] &quot;S6_Notes&quot;  &quot;S7_Notes&quot;  &quot;S8_Notes&quot;  &quot;S9_Notes&quot;  &quot;S10_Notes&quot;
+## [11] &quot;S11_Notes&quot; &quot;S12_Notes&quot; &quot;S13_Notes&quot;</code></pre>
 <pre class="r"><code>str(df_notes)</code></pre>
 <pre><code>## 'data.frame':    12578 obs. of  13 variables:
 ##  $ S1_Notes : Factor w/ 298 levels &quot;&quot;,&quot;\n\nOn March 14, 2020, the Afghan government announced closure of schools for a month. Academic year in most of&quot;| __truncated__,..: 1 1 1 1 1 1 1 1 1 1 ...
@@ -616,7 +625,7 @@ names(df_notes)</code></pre>
 </div>
 </div>
 <div id="potential-questions-to-explore" class="section level2">
-<h2>Potential Questions to explore:</h2>
+<h2>Potential Questions to Explore:</h2>
 <ul>
 <li>Which measures were most effective for which countries?</li>
 </ul>

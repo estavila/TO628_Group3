@@ -60,6 +60,14 @@ names(df)
 str(df)
 summary(df)
 
+###
+df$Date<-data.frame(as.Date(as.character(df$Date),"%Y%m%d")) #converting integer data frame to date, then we can calculate date differences (Updated Date (20200408) - Date of closing school, workplace etc.)
+
+
+df_0408<-filter(df,Date=="2020-04-08") #using the data on date 20200408
+df_0408<-arrange(df_0408,desc(ConfirmedCases, ConfirmedDeaths))#arranging in a decreasing order of confirmed cases and confirmed deaths
+df_0408_top30<-head(df_0408,30) #If we decide to use all 118 country data, delete this line.
+
 ```
 
 ### Explore Notes
