@@ -19,5 +19,9 @@ Data on COVID19 (from nytimes)
 COVID19 Kaggle Challenge
     https://www.kaggle.com/allen-institute-for-ai/CORD-19-research-challenge
     
+Data on Japan, South Korea, and Hong Kong (countries with high mask-wearing culture)
+    https://www.kaggle.com/sudalairajkumar/novel-corona-virus-2019-dataset/discussion/141083 - Japan
+    https://www.kaggle.com/kimjihoo/coronavirusdataset - South Korea
+    https://data.gov.hk/en-data/dataset/hk-dh-chpsebcddr-novel-infectious-agent - Hong Kong
 
 
