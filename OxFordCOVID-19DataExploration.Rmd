@@ -51,22 +51,24 @@ data = read.csv("OxCGRT_Download_080420_161822_Full.csv")
 names(data)
 ```
 
-### Filtered DataFrame
+### Filter DataFrame
 We removed those columns to facilitate initial data exploration.
 
 ```{r ,}
 df = subset( data, select = -c(grep( "Notes" , names( data ) )) )
 df = subset( df, select = -c(grep( "General" , names( df ) )) )
-df2 = df
 names(df)
-str(df)
-summary(df)
+#str(df)
+#summary(df)
 
+```
+
+```{r ,}
 ###
 df$Date<-data.frame(as.Date(as.character(df$Date),"%Y%m%d")) #converting integer data frame to date, then we can calculate date differences (Updated Date (20200408) - Date of closing school, workplace etc.)
 
 
-#this didn't run for me...did you use any specific libraries?
+# the two lines below didn't run for me...did you use any specific libraries?
 
 #df_0408<-filter(df,df$Date=="2020-04-08") #using the data on date 20200408
 #df_0408<-arrange(df_0408,desc(ConfirmedCases, ConfirmedDeaths))#arranging in a decreasing order of confirmed cases and confirmed deaths
@@ -74,36 +76,51 @@ df$Date<-data.frame(as.Date(as.character(df$Date),"%Y%m%d")) #converting integer
 
 ```
 
+#### Get Top 30 Countries
+Top 30 is based on the number of Confirmed Cases on 04-08-2020. This can be modified.
 ```{r ,}
-df2_ = subset(df2, df2$Date == 20200408)
-df2_ = df2_[order(-df2_$ConfirmedCases, -df2_$ConfirmedDeaths),]
+# look at the rows with the date 2020-04-08
+data_0408 = subset(data, data$Date == 20200408)
+# order data in descending order based on num cases and deaths
+data_0408 = data_0408[order(-data_0408$ConfirmedCases, -data_0408$ConfirmedDeaths),]
 
-top30 = factor(head(df2_,30)$CountryName)
-top30_list = levels(top30)
-#top30_list = as.list(levels(top30))
-top30_list
-
-df_top30 = subset(df, CountryName %in% top30_list)
-df_top30$CountryName = factor(df_top30$CountryName)
-df_top30$CountryCode = factor(df_top30$CountryCode)
-#str(df)
-#str(df_top30)
-head(df_top30,10)
+# take the levels of first 30 rows of the CountryName column
+top30 = levels(factor(head(data_0408,30)$CountryName))
+top30
 ```
 
-### Explore Notes
+#### Filter data to only include Top 30 Countries
+```{r ,}
+# take the subset of data related to top 30 countries
+df_top30 = subset(data, CountryName %in% top30)
+df_top30 = subset(df_top30, df_top30$Date <= 20200408)
+# drop unused levels from all factors
+df_top30[] = lapply(df_top30, function(x) if(is.factor(x)) factor(x) else x)
+
+# find columns with Notes or General in name
+Notes = c(grep( "Notes" , names( df_top30 ) ))
+General = c(grep( "General" , names( df_top30 ) ))
+# save notes and general as separate df's
+df_notes = subset(df_top30, select = Notes )
+df_general = subset( df_top30, select = General )
+# remove notes and general columns from main df
+df_top30 = subset( df_top30, select = -c(Notes, General))
+
+names(df_top30)
+#summary(df_top30)
+```
+
+### Explore Notes Columns
 To explore the notes data, we just peaked into one of the columns to see what kind of announcements they are using.
 ```{r ,}
-df_notes = subset( data, select = c(grep( "Notes" , names( data ) )) )
 names(df_notes)
 str(df_notes)
-levels(df_notes$S1_Notes)[1:20]
+levels(df_notes$S1_Notes)[1:5]
 ```
 
-### Explore Notes
+### Explore Genral Columns
 To explore the general, we just peaked into one of the columns to see what kind of announcements they are using.
 ```{r ,}
-df_general = subset( data, select = c(grep( "General" , names( data ) )) )
 names(df_general)
 str(df_general)
 levels(df_general$S1_IsGeneral)[1:20]
@@ -112,3 +129,4 @@ levels(df_general$S1_IsGeneral)[1:20]
 ## Potential Questions to Explore:
 
 * Which measures were most effective for which countries?
+* Predict number of cases? deaths? 
