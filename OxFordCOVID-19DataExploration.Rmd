@@ -1,0 +1,114 @@
+---
+title: "OxFord COVID-19 Data Exploration"
+output: html_document
+author: "Estefania Avila, Meitong Hu, Egle Klekere, Alla Polishchuk, Jingjing Zhang"
+---
+
+```{r setup, include=FALSE}
+knitr::opts_chunk$set(echo = TRUE)
+```
+
+## Data Source & Summary
+
+OXFORD COVID-19 GOVERNMENT RESPONSE TRACKER: aims to track and compare government responses to the coronavirus outbreak worldwide rigorously and consistently. We can analyze how specific government measures affect outcomes in terms of COVID cases and deaths.
+https://www.bsg.ox.ac.uk/research/research-projects/oxford-covid-19-government-response-tracker
+
+#### 13 Measures Tracked by Oxford:
+
+* S1_School closing
+* S2_Workplace closing
+* S3_Cancel public events
+* S4_Close public transport
+* S5_Public information campaigns
+* S6_Restrictions on internal movement
+* S7_International travel controls
+* S8_Fiscal measures
+* S9_Monetary measures
+* S10_Emergency investment in health care
+* S11_Investment in Vaccines
+* S12_Testing framework
+* S13_Contact tracing
+
+OxCGRT collects publicly available information on 13 indicators of government response (S1-S13). Nine of the indicators (S1-S7, S12 and S13) take policies such as school closures, travel bans, etc. are recorded on an ordinal scale; the remainder (S8-S11) are financial indicators such as fiscal or monetary measures.
+
+#### Other data in dataset:
+
+* ConfirmedCases
+* ConfirmedDeaths
+* StringencyIndex
+
+Oxford has a StringencyIndex that measures how stringent each government has reacted. I thought, maybe we can introduce Proactivity index - how many measures country has introduced before first ConfirmedCase and first ConfirmedDeath. I assume this affects the outcomes as well. Then one of our questiond would be: What has been more effective stringency or proactivity?
+
+Interesting analysis of Oxford data:
+https://www.bsg.ox.ac.uk/research/research-projects/oxford-covid-19-government-response-tracker?ref=researchstash
+
+## Data Exploration
+### Read File
+Read file in.Noticed it has a lot of "Notes" columns used to supply source of change in variable.
+
+```{r ,}
+data = read.csv("OxCGRT_Download_080420_161822_Full.csv")
+names(data)
+```
+
+### Filtered DataFrame
+We removed those columns to facilitate initial data exploration.
+
+```{r ,}
+df = subset( data, select = -c(grep( "Notes" , names( data ) )) )
+df = subset( df, select = -c(grep( "General" , names( df ) )) )
+df2 = df
+names(df)
+str(df)
+summary(df)
+
+###
+df$Date<-data.frame(as.Date(as.character(df$Date),"%Y%m%d")) #converting integer data frame to date, then we can calculate date differences (Updated Date (20200408) - Date of closing school, workplace etc.)
+
+
+#this didn't run for me...did you use any specific libraries?
+
+#df_0408<-filter(df,df$Date=="2020-04-08") #using the data on date 20200408
+#df_0408<-arrange(df_0408,desc(ConfirmedCases, ConfirmedDeaths))#arranging in a decreasing order of confirmed cases and confirmed deaths
+#df_0408_top30<-head(df_0408,30) #If we decide to use all 118 country data, delete this line.
+
+```
+
+```{r ,}
+df2_ = subset(df2, df2$Date == 20200408)
+df2_ = df2_[order(-df2_$ConfirmedCases, -df2_$ConfirmedDeaths),]
+
+top30 = factor(head(df2_,30)$CountryName)
+top30_list = levels(top30)
+#top30_list = as.list(levels(top30))
+top30_list
+
+df_top30 = subset(df, CountryName %in% top30_list)
+df_top30$CountryName = factor(df_top30$CountryName)
+df_top30$CountryCode = factor(df_top30$CountryCode)
+#str(df)
+#str(df_top30)
+head(df_top30,10)
+```
+
+### Explore Notes
+To explore the notes data, we just peaked into one of the columns to see what kind of announcements they are using.
+```{r ,}
+df_notes = subset( data, select = c(grep( "Notes" , names( data ) )) )
+names(df_notes)
+str(df_notes)
+levels(df_notes$S1_Notes)[1:20]
+```
+
+### Explore Notes
+To explore the general, we just peaked into one of the columns to see what kind of announcements they are using.
+```{r ,}
+df_general = subset( data, select = c(grep( "General" , names( data ) )) )
+names(df_general)
+str(df_general)
+levels(df_general$S1_IsGeneral)[1:20]
+```
+
+## Potential Questions to Explore:
+
+* Which measures were most effective for which countries?
