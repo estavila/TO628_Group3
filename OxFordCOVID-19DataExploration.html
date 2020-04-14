@@ -569,13 +569,12 @@ names(df)</code></pre>
 df$Date&lt;-data.frame(as.Date(as.character(df$Date),&quot;%Y%m%d&quot;)) #converting integer data frame to date, then we can calculate date differences (Updated Date (20200408) - Date of closing school, workplace etc.)
 
 
+#this didn't run for me...did you use any specific libraries?
+
 #df_0408&lt;-filter(df,df$Date==&quot;2020-04-08&quot;) #using the data on date 20200408
 #df_0408&lt;-arrange(df_0408,desc(ConfirmedCases, ConfirmedDeaths))#arranging in a decreasing order of confirmed cases and confirmed deaths
-#df_0408_top30&lt;-head(df_0408,30) #If we decide to use all 118 country data, delete this line.
-
-
-#summary(df2)
-df2_ = subset(df2, df2$Date == 20200408)
+#df_0408_top30&lt;-head(df_0408,30) #If we decide to use all 118 country data, delete this line.</code></pre>
+<pre class="r"><code>df2_ = subset(df2, df2$Date == 20200408)
 df2_ = df2_[order(-df2_$ConfirmedCases, -df2_$ConfirmedDeaths),]
 
 top30 = factor(head(df2_,30)$CountryName)
@@ -593,54 +592,97 @@ top30_list</code></pre>
 <pre class="r"><code>df_top30 = subset(df, CountryName %in% top30_list)
 df_top30$CountryName = factor(df_top30$CountryName)
 df_top30$CountryCode = factor(df_top30$CountryCode)
-str(df)</code></pre>
-<pre><code>## 'data.frame':    12578 obs. of  21 variables:
-##  $ CountryName                            : Factor w/ 122 levels &quot;Afghanistan&quot;,..: 5 5 5 5 5 5 5 5 5 5 ...
-##  $ CountryCode                            : Factor w/ 122 levels &quot;ABW&quot;,&quot;AFG&quot;,&quot;AGO&quot;,..: 1 1 1 1 1 1 1 1 1 1 ...
-##  $ Date                                   :'data.frame': 12578 obs. of  1 variable:
-##   ..$ as.Date.as.character.df.Date.....Y.m.d..: Date, format: &quot;2020-01-01&quot; &quot;2020-01-02&quot; ...
-##  $ S1_School.closing                      : int  0 0 0 0 0 0 0 0 0 0 ...
-##  $ S2_Workplace.closing                   : int  0 0 0 0 0 0 0 0 0 0 ...
-##  $ S3_Cancel.public.events                : int  0 0 0 0 0 0 0 0 0 0 ...
-##  $ S4_Close.public.transport              : int  0 0 0 0 0 0 0 0 0 0 ...
-##  $ S5_Public.information.campaigns        : int  0 0 0 0 0 0 0 0 0 0 ...
-##  $ S6_Restrictions.on.internal.movement   : int  0 0 0 0 0 0 0 0 0 0 ...
-##  $ S7_International.travel.controls       : int  0 0 0 0 0 0 0 0 0 0 ...
-##  $ S8_Fiscal.measures                     : num  0 0 0 0 0 0 0 0 0 0 ...
-##  $ S9_Monetary.measures                   : num  0 0 0 0 0 0 0 0 0 0 ...
-##  $ S10_Emergency.investment.in.health.care: num  0 0 0 0 0 0 0 0 0 0 ...
-##  $ S11_Investment.in.Vaccines             : num  0 0 0 0 0 0 0 0 0 0 ...
-##  $ S12_Testing.framework                  : int  0 0 0 0 0 0 0 0 0 0 ...
-##  $ S13_Contact.tracing                    : int  0 0 0 0 0 0 0 0 0 0 ...
-##  $ ConfirmedCases                         : int  NA NA NA NA NA NA NA NA NA NA ...
-##  $ ConfirmedDeaths                        : int  NA NA NA NA NA NA NA NA NA NA ...
-##  $ StringencyIndex                        : num  0 0 0 0 0 0 0 0 0 0 ...
-##  $ StringencyIndexForDisplay              : num  0 0 0 0 0 0 0 0 0 0 ...
-##  $ X                                      : logi  NA NA NA NA NA NA ...</code></pre>
-<pre class="r"><code>str(df_top30)</code></pre>
-<pre><code>## 'data.frame':    3108 obs. of  21 variables:
-##  $ CountryName                            : Factor w/ 30 levels &quot;Australia&quot;,&quot;Austria&quot;,..: 1 1 1 1 1 1 1 1 1 1 ...
-##  $ CountryCode                            : Factor w/ 30 levels &quot;AUS&quot;,&quot;AUT&quot;,&quot;BEL&quot;,..: 1 1 1 1 1 1 1 1 1 1 ...
-##  $ Date                                   :'data.frame': 3108 obs. of  1 variable:
-##   ..$ as.Date.as.character.df.Date.....Y.m.d..: Date, format: &quot;2020-01-01&quot; &quot;2020-01-02&quot; ...
-##  $ S1_School.closing                      : int  0 0 0 0 0 0 0 0 0 0 ...
-##  $ S2_Workplace.closing                   : int  0 0 0 0 0 0 0 0 0 0 ...
-##  $ S3_Cancel.public.events                : int  0 0 0 0 0 0 0 0 0 0 ...
-##  $ S4_Close.public.transport              : int  0 0 0 0 0 0 0 0 0 0 ...
-##  $ S5_Public.information.campaigns        : int  1 1 1 1 1 1 1 1 1 1 ...
-##  $ S6_Restrictions.on.internal.movement   : int  0 0 0 0 0 0 0 0 0 0 ...
-##  $ S7_International.travel.controls       : int  0 0 0 0 0 0 0 0 0 0 ...
-##  $ S8_Fiscal.measures                     : num  0 0 0 0 0 0 0 0 0 0 ...
-##  $ S9_Monetary.measures                   : num  0.75 0.75 0.75 0.75 0.75 0.75 0.75 0.75 0.75 0.75 ...
-##  $ S10_Emergency.investment.in.health.care: num  0 0 0 0 0 0 0 0 0 0 ...
-##  $ S11_Investment.in.Vaccines             : num  0 0 0 0 0 0 0 0 0 0 ...
-##  $ S12_Testing.framework                  : int  0 0 0 0 0 0 0 0 0 0 ...
-##  $ S13_Contact.tracing                    : int  0 0 0 0 0 0 0 0 0 0 ...
-##  $ ConfirmedCases                         : int  0 0 0 0 0 0 0 0 0 0 ...
-##  $ ConfirmedDeaths                        : int  0 0 0 0 0 0 0 0 0 0 ...
-##  $ StringencyIndex                        : num  7.14 7.14 7.14 7.14 7.14 7.14 7.14 7.14 7.14 7.14 ...
-##  $ StringencyIndexForDisplay              : num  7.14 7.14 7.14 7.14 7.14 7.14 7.14 7.14 7.14 7.14 ...
-##  $ X                                      : logi  NA NA NA NA NA NA ...</code></pre>
+#str(df)
+#str(df_top30)
+head(df_top30,10)</code></pre>
+<pre><code>##     CountryName CountryCode as.Date.as.character.df.Date.....Y.m.d..
+## 620   Australia         AUS                               2020-01-01
+## 621   Australia         AUS                               2020-01-02
+## 622   Australia         AUS                               2020-01-03
+## 623   Australia         AUS                               2020-01-04
+## 624   Australia         AUS                               2020-01-05
+## 625   Australia         AUS                               2020-01-06
+## 626   Australia         AUS                               2020-01-07
+## 627   Australia         AUS                               2020-01-08
+## 628   Australia         AUS                               2020-01-09
+## 629   Australia         AUS                               2020-01-10
+##     S1_School.closing S2_Workplace.closing S3_Cancel.public.events
+## 620                 0                    0                       0
+## 621                 0                    0                       0
+## 622                 0                    0                       0
+## 623                 0                    0                       0
+## 624                 0                    0                       0
+## 625                 0                    0                       0
+## 626                 0                    0                       0
+## 627                 0                    0                       0
+## 628                 0                    0                       0
+## 629                 0                    0                       0
+##     S4_Close.public.transport S5_Public.information.campaigns
+## 620                         0                               1
+## 621                         0                               1
+## 622                         0                               1
+## 623                         0                               1
+## 624                         0                               1
+## 625                         0                               1
+## 626                         0                               1
+## 627                         0                               1
+## 628                         0                               1
+## 629                         0                               1
+##     S6_Restrictions.on.internal.movement S7_International.travel.controls
+## 620                                    0                                0
+## 621                                    0                                0
+## 622                                    0                                0
+## 623                                    0                                0
+## 624                                    0                                0
+## 625                                    0                                0
+## 626                                    0                                0
+## 627                                    0                                0
+## 628                                    0                                0
+## 629                                    0                                0
+##     S8_Fiscal.measures S9_Monetary.measures
+## 620                  0                 0.75
+## 621                  0                 0.75
+## 622                  0                 0.75
+## 623                  0                 0.75
+## 624                  0                 0.75
+## 625                  0                 0.75
+## 626                  0                 0.75
+## 627                  0                 0.75
+## 628                  0                 0.75
+## 629                  0                 0.75
+##     S10_Emergency.investment.in.health.care S11_Investment.in.Vaccines
+## 620                                       0                          0
+## 621                                       0                          0
+## 622                                       0                          0
+## 623                                       0                          0
+## 624                                       0                          0
+## 625                                       0                          0
+## 626                                       0                          0
+## 627                                       0                          0
+## 628                                       0                          0
+## 629                                       0                          0
+##     S12_Testing.framework S13_Contact.tracing ConfirmedCases ConfirmedDeaths
+## 620                     0                   0              0               0
+## 621                     0                   0              0               0
+## 622                     0                   0              0               0
+## 623                     0                   0              0               0
+## 624                     0                   0              0               0
+## 625                     0                   0              0               0
+## 626                     0                   0              0               0
+## 627                     0                   0              0               0
+## 628                     0                   0              0               0
+## 629                     0                   0              0               0
+##     StringencyIndex StringencyIndexForDisplay  X
+## 620            7.14                      7.14 NA
+## 621            7.14                      7.14 NA
+## 622            7.14                      7.14 NA
+## 623            7.14                      7.14 NA
+## 624            7.14                      7.14 NA
+## 625            7.14                      7.14 NA
+## 626            7.14                      7.14 NA
+## 627            7.14                      7.14 NA
+## 628            7.14                      7.14 NA
+## 629            7.14                      7.14 NA</code></pre>
 </div>
 <div id="explore-notes" class="section level3">
 <h3>Explore Notes</h3>
@@ -665,12 +707,27 @@ names(df_notes)</code></pre>
 ##  $ S11_Notes: Factor w/ 57 levels &quot;&quot;,&quot;\n\nFaced with the spread of COVID-19, which has already affected more than 200 people in Burkina Faso, authori&quot;| __truncated__,..: 1 1 1 1 1 1 1 1 1 1 ...
 ##  $ S12_Notes: Factor w/ 226 levels &quot;&quot;,&quot; first person tests positive in mainland spain. Catalan health authorities have isolated 25 people with whom sh&quot;| __truncated__,..: 1 1 1 1 1 1 1 1 1 1 ...
 ##  $ S13_Notes: Factor w/ 168 levels &quot;&quot;,&quot;\n\nhttps://www.thejakartapost.com/news/2020/03/15/covid-19-indonesia-finally-begins-contact-tracing-of-patient&quot;| __truncated__,..: 1 1 1 1 1 1 1 1 1 1 ...</code></pre>
-<pre class="r"><code>levels(df_notes$S1_Notes)[1:5]</code></pre>
-<pre><code>## [1] &quot;&quot;                                                                                                                                                                                                                                                                                                                                                                                  
-## [2] &quot;\n\nOn March 14, 2020, the Afghan government announced closure of schools for a month. Academic year in most of the country beings on March 21st. As of now, the schools will not start the new academic year until April 21, 2020: https://web.archive.org/web/20200402185825/http://www.afghanistantimes.af/afghanistan-shuts-schools-bans-public-events-amid-coronavirus-fears/&quot;
-## [3] &quot;\nArabic Reuters reported that the Egyptian Prime Minister has announced the complete shutdown of schools and universities for a period of 2 weeks starting from the 15th of March 2020. \nSource: Arabic Reuters: https://ara.reuters.com/article/idARAKBN2110RW&quot;                                                                                                                 
-## [4] &quot;\nclass resumption date of schools of non-tertiary education in Macao will be postponed to 10th February, 2020 (Monday) or later [https://news.gov.mo/detail/en/N20AbkkQOh?19]&quot;                                                                                                                                                                                                    
-## [5] &quot;\nhttps://en.unesco.org/themes/education-emergencies/coronavirus-school-closures\nhttps://www.theguardian.com/world/2020/mar/12/how-do-coronavirus-containment-measures-vary-across-europe&quot;</code></pre>
+<pre class="r"><code>levels(df_notes$S1_Notes)[1:20]</code></pre>
+<pre><code>##  [1] &quot;&quot;                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                               
+##  [2] &quot;\n\nOn March 14, 2020, the Afghan government announced closure of schools for a month. Academic year in most of the country beings on March 21st. As of now, the schools will not start the new academic year until April 21, 2020: https://web.archive.org/web/20200402185825/http://www.afghanistantimes.af/afghanistan-shuts-schools-bans-public-events-amid-coronavirus-fears/&quot;                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                             
+##  [3] &quot;\nArabic Reuters reported that the Egyptian Prime Minister has announced the complete shutdown of schools and universities for a period of 2 weeks starting from the 15th of March 2020. \nSource: Arabic Reuters: https://ara.reuters.com/article/idARAKBN2110RW&quot;                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                              
+##  [4] &quot;\nclass resumption date of schools of non-tertiary education in Macao will be postponed to 10th February, 2020 (Monday) or later [https://news.gov.mo/detail/en/N20AbkkQOh?19]&quot;                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                 
+##  [5] &quot;\nhttps://en.unesco.org/themes/education-emergencies/coronavirus-school-closures\nhttps://www.theguardian.com/world/2020/mar/12/how-do-coronavirus-containment-measures-vary-across-europe&quot;                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                     
+##  [6] &quot;\nSource: https://www.reuters.com/article/us-health-coronavirus-moscow-events/russia-bans-entry-to-foreign-nationals-closes-schools-idUSKBN21329T&quot;                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                              
+##  [7] &quot;\nTen Higher Education Institutions of Macao agreed unanimously that all classes will be postponed till 11 February [https://news.gov.mo/detail/en/N20AXX2HVB?15]\n&quot;                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                            
+##  [8] &quot; &quot;                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                              
+##  [9] &quot; A total of 592 schools and kindergartens in South Korea suspended classes Thursday in an emergency measure to help curb the spread of the new coronavirus, the education ministry said.\n\nAccording to the ministry, 450 kindergartens, 77 elementary schools, 29 middle schools, 33 high schools and three special education schools were closed on the day, an increase of 220 from the previous day.\n\nhttps://en.yna.co.kr/view/AEN20200206012600325?section=search&quot;                                                                                                                                                                                                                                                                                                                                                                                                                                                                                     
+## [10] &quot; School and universities remain closed.  https://reliefweb.int/report/iraq/iraq-covid-19-situation-report-no-3-5-march-2020&quot;                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                    
+## [11] &quot;-'Under the Notice, the Minister of Health, the Hon. Kim Wilson JP, MP, has Ordered the following establishments closed effective March 21, 2020. For public clarity, the establishments are as follows: Schools; Swimming pools in hotels, Airbnb and guest houses; Beauty salons, spas and barbers; Church services (except funerals); Organised sports club activities with more than 50 people; and Concerts with more than 50 people'.\nhttps://www.gov.bm/articles/closure-notice-enforcement-penalties&quot;                                                                                                                                                                                                                                                                                                                                                                                                                                                  
+## [12] &quot;-Starting March 29, 2020, a Shelter in Place is into effect for the entire population, as announced in the AB2020No.43. This means that you are not allowed to leave the house, only for necessary things, such as buying food, going to the pharmacy, exercising or getting gas. The measures apply to non-essential groups. See overview of non-essential businesses/ activities. Businesses must instruct their customers that they must keep 2 meters apart. If the social distance rule is not enforced, companies will be closed and fined. A ban on gathering (loitering) has also been issued, in particular the prohibition of group formation in public space by 4 or more people, with the exception of families living under the same roof.   \nRetrieved at: https://web.archive.org/web/20200402180605/https://www.overheid.aw/news/news_47033/item/crisis-measures-by-the-government-of-aruba-in-connection-with-coronavirus-covid-19_48509.html&quot;
+## [13] &quot;'All schools delay reopening until Feb 29th due to Covid-19'\n\n /web/20200403025500/http://news.chinhphu.vn/Home/Latest-update-on-COVID19-combat-in-Viet-Nam/20202/38851.vgp&quot;                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                  
+## [14] &quot;'As of February 3, 50 out of 63 provincies and cities have decided to postpone school reopening in a bid to prevent the novel Coronavirus spread, according to the Ministry of Education and Training.'\n\n/web/20200403000907/http://news.chinhphu.vn/Home/50-localities-postpone-school-reopening-for-fear-of-novel-Coronavirus/20202/38636.vgp&quot;                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                              
+## [15] &quot;'Effective Friday, March 20th, all schools will be closed for 14 days which will lead right into the Easter break.' http://health.gov.bz/www/component/content/article/177-general-health/1024-belize-announces-new-measures-in-response-to-covid-19&quot;                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                           
+## [16] &quot;'Greece followed the lead of Iran and Italy, where deaths on Thursday rose to 148, by shuttering educational institutions and cancelling sports events and other public gatherings in three western regions.' http://web.archive.org/web/20200401094539/https://www.theguardian.com/world/2020/mar/05/iran-to-restrict-travel-between-cities-as-3500-catch-coronavirus&quot;                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                         
+## [17] &quot;'He [Erdogan] said primary, middle and secondary schools would be closed for one week (March 16- 20) and after that students will receive remote online tuition for another week from March 23.'\nSource: https://www.reuters.com/article/us-health-coronavirus-turkey/turkey-says-schools-universities-to-close-over-coronavirus-idUSKBN20Z2RH,\nhttps://www.middleeasteye.net/news/coronavirus-turkey-close-schools-universities-football-sports-games&quot;                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                       
+## [18] &quot;'launching awareness campaigns for all workers at schools and teaching establishments.' https://www.sana.sy/en/?p=187953&quot;                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                       
+## [19] &quot;'On March 13, the Swiss government announced the temporary closure of schools and universities nationwide to slow the spread of the novel coronavirus.' https://www.swissinfo.ch/eng/covid-19_switzerland-closes-its-schools-to-slow-virus-spread/45614324&quot;                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                     
+## [20] &quot;'Panama’s government ordered the temporary closure of all schools due to the fast-spreading coronavirus' https://nationalpost.com/pmn/health-pmn/panama-peru-order-school-closures-due-to-coronavirus&quot;</code></pre>
 </div>
 <div id="explore-notes-1" class="section level3">
 <h3>Explore Notes</h3>
@@ -687,7 +744,7 @@ names(df_general)</code></pre>
 ##  $ S4_IsGeneral: int  NA NA NA NA NA NA NA NA NA NA ...
 ##  $ S5_IsGeneral: int  NA NA NA NA NA NA NA NA NA NA ...
 ##  $ S6_IsGeneral: int  NA NA NA NA NA NA NA NA NA NA ...</code></pre>
-<pre class="r"><code>levels(df_general$S1_IsGeneral)[1:5]</code></pre>
+<pre class="r"><code>levels(df_general$S1_IsGeneral)[1:20]</code></pre>
 <pre><code>## NULL</code></pre>
 </div>
 </div>

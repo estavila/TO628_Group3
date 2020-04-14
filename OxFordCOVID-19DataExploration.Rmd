@@ -66,12 +66,15 @@ summary(df)
 df$Date<-data.frame(as.Date(as.character(df$Date),"%Y%m%d")) #converting integer data frame to date, then we can calculate date differences (Updated Date (20200408) - Date of closing school, workplace etc.)
 
 
+#this didn't run for me...did you use any specific libraries?
+
 #df_0408<-filter(df,df$Date=="2020-04-08") #using the data on date 20200408
 #df_0408<-arrange(df_0408,desc(ConfirmedCases, ConfirmedDeaths))#arranging in a decreasing order of confirmed cases and confirmed deaths
 #df_0408_top30<-head(df_0408,30) #If we decide to use all 118 country data, delete this line.
 
+```
 
-#summary(df2)
+```{r ,}
 df2_ = subset(df2, df2$Date == 20200408)
 df2_ = df2_[order(-df2_$ConfirmedCases, -df2_$ConfirmedDeaths),]
 
@@ -83,10 +86,9 @@ top30_list
 df_top30 = subset(df, CountryName %in% top30_list)
 df_top30$CountryName = factor(df_top30$CountryName)
 df_top30$CountryCode = factor(df_top30$CountryCode)
-str(df)
-str(df_top30)
-
-
+#str(df)
+#str(df_top30)
+head(df_top30,10)
 ```
 
 ### Explore Notes
@@ -95,7 +97,7 @@ To explore the notes data, we just peaked into one of the columns to see what ki
 df_notes = subset( data, select = c(grep( "Notes" , names( data ) )) )
 names(df_notes)
 str(df_notes)
-levels(df_notes$S1_Notes)[1:5]
+levels(df_notes$S1_Notes)[1:20]
 ```
 
 ### Explore Notes
@@ -104,7 +106,7 @@ To explore the general, we just peaked into one of the columns to see what kind 
 df_general = subset( data, select = c(grep( "General" , names( data ) )) )
 names(df_general)
 str(df_general)
-levels(df_general$S1_IsGeneral)[1:5]
+levels(df_general$S1_IsGeneral)[1:20]
 ```
 
 ## Potential Questions to Explore:
