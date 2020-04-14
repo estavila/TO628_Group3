@@ -1,11 +1,10 @@
 <!DOCTYPE html>
 
-<html xmlns="http://www.w3.org/1999/xhtml">
+<html>
 
 <head>
 
 <meta charset="utf-8" />
-<meta http-equiv="Content-Type" content="text/html; charset=utf-8" />
 <meta name="generator" content="pandoc" />
 <meta http-equiv="X-UA-Compatible" content="IE=EDGE" />
 
@@ -270,7 +269,6 @@ code {
 }
 img {
   max-width:100%;
-  height: auto;
 }
 .tabbed-pane {
   padding-top: 12px;
@@ -332,6 +330,7 @@ summary {
   border: none;
   display: inline-block;
   border-radius: 4px;
+  background-color: transparent;
 }
 
 .tabset-dropdown > .nav-tabs.nav-tabs-open > li {
@@ -454,51 +453,41 @@ names(data)</code></pre>
 <h3>Filtered DataFrame</h3>
 <p>We removed those columns to facilitate initial data exploration.</p>
 <pre class="r"><code>df = subset( data, select = -c(grep( &quot;Notes&quot; , names( data ) )) )
+df = subset( df, select = -c(grep( &quot;General&quot; , names( df ) )) )
+df2 = df
 names(df)</code></pre>
 <pre><code>##  [1] &quot;CountryName&quot;                            
 ##  [2] &quot;CountryCode&quot;                            
 ##  [3] &quot;Date&quot;                                   
 ##  [4] &quot;S1_School.closing&quot;                      
-##  [5] &quot;S1_IsGeneral&quot;                           
-##  [6] &quot;S2_Workplace.closing&quot;                   
-##  [7] &quot;S2_IsGeneral&quot;                           
-##  [8] &quot;S3_Cancel.public.events&quot;                
-##  [9] &quot;S3_IsGeneral&quot;                           
-## [10] &quot;S4_Close.public.transport&quot;              
-## [11] &quot;S4_IsGeneral&quot;                           
-## [12] &quot;S5_Public.information.campaigns&quot;        
-## [13] &quot;S5_IsGeneral&quot;                           
-## [14] &quot;S6_Restrictions.on.internal.movement&quot;   
-## [15] &quot;S6_IsGeneral&quot;                           
-## [16] &quot;S7_International.travel.controls&quot;       
-## [17] &quot;S8_Fiscal.measures&quot;                     
-## [18] &quot;S9_Monetary.measures&quot;                   
-## [19] &quot;S10_Emergency.investment.in.health.care&quot;
-## [20] &quot;S11_Investment.in.Vaccines&quot;             
-## [21] &quot;S12_Testing.framework&quot;                  
-## [22] &quot;S13_Contact.tracing&quot;                    
-## [23] &quot;ConfirmedCases&quot;                         
-## [24] &quot;ConfirmedDeaths&quot;                        
-## [25] &quot;StringencyIndex&quot;                        
-## [26] &quot;StringencyIndexForDisplay&quot;              
-## [27] &quot;X&quot;</code></pre>
+##  [5] &quot;S2_Workplace.closing&quot;                   
+##  [6] &quot;S3_Cancel.public.events&quot;                
+##  [7] &quot;S4_Close.public.transport&quot;              
+##  [8] &quot;S5_Public.information.campaigns&quot;        
+##  [9] &quot;S6_Restrictions.on.internal.movement&quot;   
+## [10] &quot;S7_International.travel.controls&quot;       
+## [11] &quot;S8_Fiscal.measures&quot;                     
+## [12] &quot;S9_Monetary.measures&quot;                   
+## [13] &quot;S10_Emergency.investment.in.health.care&quot;
+## [14] &quot;S11_Investment.in.Vaccines&quot;             
+## [15] &quot;S12_Testing.framework&quot;                  
+## [16] &quot;S13_Contact.tracing&quot;                    
+## [17] &quot;ConfirmedCases&quot;                         
+## [18] &quot;ConfirmedDeaths&quot;                        
+## [19] &quot;StringencyIndex&quot;                        
+## [20] &quot;StringencyIndexForDisplay&quot;              
+## [21] &quot;X&quot;</code></pre>
 <pre class="r"><code>str(df)</code></pre>
-<pre><code>## 'data.frame':    12578 obs. of  27 variables:
+<pre><code>## 'data.frame':    12578 obs. of  21 variables:
 ##  $ CountryName                            : Factor w/ 122 levels &quot;Afghanistan&quot;,..: 5 5 5 5 5 5 5 5 5 5 ...
 ##  $ CountryCode                            : Factor w/ 122 levels &quot;ABW&quot;,&quot;AFG&quot;,&quot;AGO&quot;,..: 1 1 1 1 1 1 1 1 1 1 ...
 ##  $ Date                                   : int  20200101 20200102 20200103 20200104 20200105 20200106 20200107 20200108 20200109 20200110 ...
 ##  $ S1_School.closing                      : int  0 0 0 0 0 0 0 0 0 0 ...
-##  $ S1_IsGeneral                           : int  NA NA NA NA NA NA NA NA NA NA ...
 ##  $ S2_Workplace.closing                   : int  0 0 0 0 0 0 0 0 0 0 ...
-##  $ S2_IsGeneral                           : int  NA NA NA NA NA NA NA NA NA NA ...
 ##  $ S3_Cancel.public.events                : int  0 0 0 0 0 0 0 0 0 0 ...
-##  $ S3_IsGeneral                           : int  NA NA NA NA NA NA NA NA NA NA ...
 ##  $ S4_Close.public.transport              : int  0 0 0 0 0 0 0 0 0 0 ...
-##  $ S4_IsGeneral                           : int  NA NA NA NA NA NA NA NA NA NA ...
 ##  $ S5_Public.information.campaigns        : int  0 0 0 0 0 0 0 0 0 0 ...
-##  $ S5_IsGeneral                           : int  NA NA NA NA NA NA NA NA NA NA ...
 ##  $ S6_Restrictions.on.internal.movement   : int  0 0 0 0 0 0 0 0 0 0 ...
-##  $ S6_IsGeneral                           : int  NA NA NA NA NA NA NA NA NA NA ...
 ##  $ S7_International.travel.controls       : int  0 0 0 0 0 0 0 0 0 0 ...
 ##  $ S8_Fiscal.measures                     : num  0 0 0 0 0 0 0 0 0 0 ...
 ##  $ S9_Monetary.measures                   : num  0 0 0 0 0 0 0 0 0 0 ...
@@ -520,46 +509,38 @@ names(df)</code></pre>
 ##  Russia              :  121   RUS    :  121   3rd Qu.:20200319  
 ##  Uzbekistan          :  121   UZB    :  121   Max.   :20200601  
 ##  (Other)             :11785   (Other):11785                     
-##  S1_School.closing  S1_IsGeneral   S2_Workplace.closing  S2_IsGeneral  
-##  Min.   :0.0000    Min.   :0.000   Min.   :0.0000       Min.   :0.000  
-##  1st Qu.:0.0000    1st Qu.:0.000   1st Qu.:0.0000       1st Qu.:0.000  
-##  Median :0.0000    Median :1.000   Median :0.0000       Median :0.000  
-##  Mean   :0.5469    Mean   :0.682   Mean   :0.3772       Mean   :0.485  
-##  3rd Qu.:2.0000    3rd Qu.:1.000   3rd Qu.:0.0000       3rd Qu.:1.000  
-##  Max.   :2.0000    Max.   :1.000   Max.   :2.0000       Max.   :1.000  
-##  NA's   :817       NA's   :7070    NA's   :1153         NA's   :7887   
-##  S3_Cancel.public.events  S3_IsGeneral   S4_Close.public.transport
-##  Min.   :0.0000          Min.   :0.000   Min.   :0.0000           
-##  1st Qu.:0.0000          1st Qu.:0.000   1st Qu.:0.0000           
-##  Median :0.0000          Median :1.000   Median :0.0000           
-##  Mean   :0.5641          Mean   :0.626   Mean   :0.2168           
-##  3rd Qu.:2.0000          3rd Qu.:1.000   3rd Qu.:0.0000           
-##  Max.   :2.0000          Max.   :1.000   Max.   :2.0000           
-##  NA's   :1012            NA's   :7292    NA's   :1229             
-##   S4_IsGeneral  S5_Public.information.campaigns  S5_IsGeneral  
-##  Min.   :0.00   Min.   :0.0000                  Min.   :0.000  
-##  1st Qu.:0.00   1st Qu.:0.0000                  1st Qu.:1.000  
-##  Median :0.00   Median :0.0000                  Median :1.000  
-##  Mean   :0.46   Mean   :0.4831                  Mean   :0.858  
-##  3rd Qu.:1.00   3rd Qu.:1.0000                  3rd Qu.:1.000  
-##  Max.   :1.00   Max.   :1.0000                  Max.   :1.000  
-##  NA's   :8854   NA's   :1321                    NA's   :6010   
-##  S6_Restrictions.on.internal.movement  S6_IsGeneral 
-##  Min.   :0.0000                       Min.   :0.00  
-##  1st Qu.:0.0000                       1st Qu.:0.00  
-##  Median :0.0000                       Median :1.00  
-##  Mean   :0.4128                       Mean   :0.55  
-##  3rd Qu.:0.0000                       3rd Qu.:1.00  
-##  Max.   :2.0000                       Max.   :1.00  
-##  NA's   :1147                         NA's   :7691  
-##  S7_International.travel.controls S8_Fiscal.measures  S9_Monetary.measures
-##  Min.   :0.000                    Min.   :0.000e+00   Min.   :   -0.750   
-##  1st Qu.:0.000                    1st Qu.:0.000e+00   1st Qu.:    0.000   
-##  Median :0.000                    Median :0.000e+00   Median :    1.500   
-##  Mean   :1.145                    Mean   :7.562e+09   Mean   :    7.377   
-##  3rd Qu.:3.000                    3rd Qu.:0.000e+00   3rd Qu.:    5.000   
-##  Max.   :3.000                    Max.   :3.326e+12   Max.   :11750.000   
-##  NA's   :1180                     NA's   :1999        NA's   :2109        
+##  S1_School.closing S2_Workplace.closing S3_Cancel.public.events
+##  Min.   :0.0000    Min.   :0.0000       Min.   :0.0000         
+##  1st Qu.:0.0000    1st Qu.:0.0000       1st Qu.:0.0000         
+##  Median :0.0000    Median :0.0000       Median :0.0000         
+##  Mean   :0.5469    Mean   :0.3772       Mean   :0.5641         
+##  3rd Qu.:2.0000    3rd Qu.:0.0000       3rd Qu.:2.0000         
+##  Max.   :2.0000    Max.   :2.0000       Max.   :2.0000         
+##  NA's   :817       NA's   :1153         NA's   :1012           
+##  S4_Close.public.transport S5_Public.information.campaigns
+##  Min.   :0.0000            Min.   :0.0000                 
+##  1st Qu.:0.0000            1st Qu.:0.0000                 
+##  Median :0.0000            Median :0.0000                 
+##  Mean   :0.2168            Mean   :0.4831                 
+##  3rd Qu.:0.0000            3rd Qu.:1.0000                 
+##  Max.   :2.0000            Max.   :1.0000                 
+##  NA's   :1229              NA's   :1321                   
+##  S6_Restrictions.on.internal.movement S7_International.travel.controls
+##  Min.   :0.0000                       Min.   :0.000                   
+##  1st Qu.:0.0000                       1st Qu.:0.000                   
+##  Median :0.0000                       Median :0.000                   
+##  Mean   :0.4128                       Mean   :1.145                   
+##  3rd Qu.:0.0000                       3rd Qu.:3.000                   
+##  Max.   :2.0000                       Max.   :3.000                   
+##  NA's   :1147                         NA's   :1180                    
+##  S8_Fiscal.measures  S9_Monetary.measures
+##  Min.   :0.000e+00   Min.   :   -0.750   
+##  1st Qu.:0.000e+00   1st Qu.:    0.000   
+##  Median :0.000e+00   Median :    1.500   
+##  Mean   :7.562e+09   Mean   :    7.377   
+##  3rd Qu.:0.000e+00   3rd Qu.:    5.000   
+##  Max.   :3.326e+12   Max.   :11750.000   
+##  NA's   :1999        NA's   :2109        
 ##  S10_Emergency.investment.in.health.care S11_Investment.in.Vaccines
 ##  Min.   :0.000e+00                       Min.   :        0         
 ##  1st Qu.:0.000e+00                       1st Qu.:        0         
@@ -568,39 +549,107 @@ names(df)</code></pre>
 ##  3rd Qu.:0.000e+00                       3rd Qu.:        0         
 ##  Max.   :1.500e+11                       Max.   :826000000         
 ##  NA's   :2485                            NA's   :2754              
-##  S12_Testing.framework S13_Contact.tracing ConfirmedCases  
-##  Min.   :0.0000        Min.   :0.000       Min.   :     0  
-##  1st Qu.:0.0000        1st Qu.:0.000       1st Qu.:     0  
-##  Median :0.0000        Median :0.000       Median :    11  
-##  Mean   :0.6109        Mean   :0.533       Mean   :  2730  
-##  3rd Qu.:1.0000        3rd Qu.:1.000       3rd Qu.:   228  
-##  Max.   :3.0000        Max.   :2.000       Max.   :398809  
-##  NA's   :3129          NA's   :3216        NA's   :5782    
-##  ConfirmedDeaths   StringencyIndex  StringencyIndexForDisplay
-##  Min.   :    0.0   Min.   :  0.00   Min.   :  0.00           
-##  1st Qu.:    0.0   1st Qu.:  0.00   1st Qu.:  0.00           
-##  Median :    0.0   Median :  9.52   Median : 14.29           
-##  Mean   :  128.9   Mean   : 24.63   Mean   : 28.86           
-##  3rd Qu.:    3.0   3rd Qu.: 42.86   3rd Qu.: 61.90           
-##  Max.   :17129.0   Max.   :119.05   Max.   :119.05           
-##  NA's   :5782      NA's   :1340     NA's   :423              
-##     X          
-##  Mode:logical  
-##  NA's:12578    
-##                
-##                
-##                
-##                
-## </code></pre>
+##  S12_Testing.framework S13_Contact.tracing ConfirmedCases   ConfirmedDeaths  
+##  Min.   :0.0000        Min.   :0.000       Min.   :     0   Min.   :    0.0  
+##  1st Qu.:0.0000        1st Qu.:0.000       1st Qu.:     0   1st Qu.:    0.0  
+##  Median :0.0000        Median :0.000       Median :    11   Median :    0.0  
+##  Mean   :0.6109        Mean   :0.533       Mean   :  2730   Mean   :  128.9  
+##  3rd Qu.:1.0000        3rd Qu.:1.000       3rd Qu.:   228   3rd Qu.:    3.0  
+##  Max.   :3.0000        Max.   :2.000       Max.   :398809   Max.   :17129.0  
+##  NA's   :3129          NA's   :3216        NA's   :5782     NA's   :5782     
+##  StringencyIndex  StringencyIndexForDisplay    X          
+##  Min.   :  0.00   Min.   :  0.00            Mode:logical  
+##  1st Qu.:  0.00   1st Qu.:  0.00            NA's:12578    
+##  Median :  9.52   Median : 14.29                          
+##  Mean   : 24.63   Mean   : 28.86                          
+##  3rd Qu.: 42.86   3rd Qu.: 61.90                          
+##  Max.   :119.05   Max.   :119.05                          
+##  NA's   :1340     NA's   :423</code></pre>
+<pre class="r"><code>###
+df$Date&lt;-data.frame(as.Date(as.character(df$Date),&quot;%Y%m%d&quot;)) #converting integer data frame to date, then we can calculate date differences (Updated Date (20200408) - Date of closing school, workplace etc.)
+
+
+#df_0408&lt;-filter(df,df$Date==&quot;2020-04-08&quot;) #using the data on date 20200408
+#df_0408&lt;-arrange(df_0408,desc(ConfirmedCases, ConfirmedDeaths))#arranging in a decreasing order of confirmed cases and confirmed deaths
+#df_0408_top30&lt;-head(df_0408,30) #If we decide to use all 118 country data, delete this line.
+
+
+#summary(df2)
+df2_ = subset(df2, df2$Date == 20200408)
+df2_ = df2_[order(-df2_$ConfirmedCases, -df2_$ConfirmedDeaths),]
+
+top30 = factor(head(df2_,30)$CountryName)
+top30_list = levels(top30)
+#top30_list = as.list(levels(top30))
+top30_list</code></pre>
+<pre><code>##  [1] &quot;Australia&quot;      &quot;Austria&quot;        &quot;Belgium&quot;        &quot;Brazil&quot;        
+##  [5] &quot;Canada&quot;         &quot;Chile&quot;          &quot;China&quot;          &quot;Denmark&quot;       
+##  [9] &quot;Ecuador&quot;        &quot;France&quot;         &quot;Germany&quot;        &quot;India&quot;         
+## [13] &quot;Iran&quot;           &quot;Ireland&quot;        &quot;Israel&quot;         &quot;Italy&quot;         
+## [17] &quot;Netherlands&quot;    &quot;Norway&quot;         &quot;Pakistan&quot;       &quot;Poland&quot;        
+## [21] &quot;Portugal&quot;       &quot;Romania&quot;        &quot;Russia&quot;         &quot;South Korea&quot;   
+## [25] &quot;Spain&quot;          &quot;Sweden&quot;         &quot;Switzerland&quot;    &quot;Turkey&quot;        
+## [29] &quot;United Kingdom&quot; &quot;United States&quot;</code></pre>
+<pre class="r"><code>df_top30 = subset(df, CountryName %in% top30_list)
+df_top30$CountryName = factor(df_top30$CountryName)
+df_top30$CountryCode = factor(df_top30$CountryCode)
+str(df)</code></pre>
+<pre><code>## 'data.frame':    12578 obs. of  21 variables:
+##  $ CountryName                            : Factor w/ 122 levels &quot;Afghanistan&quot;,..: 5 5 5 5 5 5 5 5 5 5 ...
+##  $ CountryCode                            : Factor w/ 122 levels &quot;ABW&quot;,&quot;AFG&quot;,&quot;AGO&quot;,..: 1 1 1 1 1 1 1 1 1 1 ...
+##  $ Date                                   :'data.frame': 12578 obs. of  1 variable:
+##   ..$ as.Date.as.character.df.Date.....Y.m.d..: Date, format: &quot;2020-01-01&quot; &quot;2020-01-02&quot; ...
+##  $ S1_School.closing                      : int  0 0 0 0 0 0 0 0 0 0 ...
+##  $ S2_Workplace.closing                   : int  0 0 0 0 0 0 0 0 0 0 ...
+##  $ S3_Cancel.public.events                : int  0 0 0 0 0 0 0 0 0 0 ...
+##  $ S4_Close.public.transport              : int  0 0 0 0 0 0 0 0 0 0 ...
+##  $ S5_Public.information.campaigns        : int  0 0 0 0 0 0 0 0 0 0 ...
+##  $ S6_Restrictions.on.internal.movement   : int  0 0 0 0 0 0 0 0 0 0 ...
+##  $ S7_International.travel.controls       : int  0 0 0 0 0 0 0 0 0 0 ...
+##  $ S8_Fiscal.measures                     : num  0 0 0 0 0 0 0 0 0 0 ...
+##  $ S9_Monetary.measures                   : num  0 0 0 0 0 0 0 0 0 0 ...
+##  $ S10_Emergency.investment.in.health.care: num  0 0 0 0 0 0 0 0 0 0 ...
+##  $ S11_Investment.in.Vaccines             : num  0 0 0 0 0 0 0 0 0 0 ...
+##  $ S12_Testing.framework                  : int  0 0 0 0 0 0 0 0 0 0 ...
+##  $ S13_Contact.tracing                    : int  0 0 0 0 0 0 0 0 0 0 ...
+##  $ ConfirmedCases                         : int  NA NA NA NA NA NA NA NA NA NA ...
+##  $ ConfirmedDeaths                        : int  NA NA NA NA NA NA NA NA NA NA ...
+##  $ StringencyIndex                        : num  0 0 0 0 0 0 0 0 0 0 ...
+##  $ StringencyIndexForDisplay              : num  0 0 0 0 0 0 0 0 0 0 ...
+##  $ X                                      : logi  NA NA NA NA NA NA ...</code></pre>
+<pre class="r"><code>str(df_top30)</code></pre>
+<pre><code>## 'data.frame':    3108 obs. of  21 variables:
+##  $ CountryName                            : Factor w/ 30 levels &quot;Australia&quot;,&quot;Austria&quot;,..: 1 1 1 1 1 1 1 1 1 1 ...
+##  $ CountryCode                            : Factor w/ 30 levels &quot;AUS&quot;,&quot;AUT&quot;,&quot;BEL&quot;,..: 1 1 1 1 1 1 1 1 1 1 ...
+##  $ Date                                   :'data.frame': 3108 obs. of  1 variable:
+##   ..$ as.Date.as.character.df.Date.....Y.m.d..: Date, format: &quot;2020-01-01&quot; &quot;2020-01-02&quot; ...
+##  $ S1_School.closing                      : int  0 0 0 0 0 0 0 0 0 0 ...
+##  $ S2_Workplace.closing                   : int  0 0 0 0 0 0 0 0 0 0 ...
+##  $ S3_Cancel.public.events                : int  0 0 0 0 0 0 0 0 0 0 ...
+##  $ S4_Close.public.transport              : int  0 0 0 0 0 0 0 0 0 0 ...
+##  $ S5_Public.information.campaigns        : int  1 1 1 1 1 1 1 1 1 1 ...
+##  $ S6_Restrictions.on.internal.movement   : int  0 0 0 0 0 0 0 0 0 0 ...
+##  $ S7_International.travel.controls       : int  0 0 0 0 0 0 0 0 0 0 ...
+##  $ S8_Fiscal.measures                     : num  0 0 0 0 0 0 0 0 0 0 ...
+##  $ S9_Monetary.measures                   : num  0.75 0.75 0.75 0.75 0.75 0.75 0.75 0.75 0.75 0.75 ...
+##  $ S10_Emergency.investment.in.health.care: num  0 0 0 0 0 0 0 0 0 0 ...
+##  $ S11_Investment.in.Vaccines             : num  0 0 0 0 0 0 0 0 0 0 ...
+##  $ S12_Testing.framework                  : int  0 0 0 0 0 0 0 0 0 0 ...
+##  $ S13_Contact.tracing                    : int  0 0 0 0 0 0 0 0 0 0 ...
+##  $ ConfirmedCases                         : int  0 0 0 0 0 0 0 0 0 0 ...
+##  $ ConfirmedDeaths                        : int  0 0 0 0 0 0 0 0 0 0 ...
+##  $ StringencyIndex                        : num  7.14 7.14 7.14 7.14 7.14 7.14 7.14 7.14 7.14 7.14 ...
+##  $ StringencyIndexForDisplay              : num  7.14 7.14 7.14 7.14 7.14 7.14 7.14 7.14 7.14 7.14 ...
+##  $ X                                      : logi  NA NA NA NA NA NA ...</code></pre>
 </div>
 <div id="explore-notes" class="section level3">
 <h3>Explore Notes</h3>
 <p>To explore the notes data, we just peaked into one of the columns to see what kind of announcements they are using.</p>
 <pre class="r"><code>df_notes = subset( data, select = c(grep( &quot;Notes&quot; , names( data ) )) )
 names(df_notes)</code></pre>
-<pre><code>##  [1] &quot;S1_Notes&quot;  &quot;S2_Notes&quot;  &quot;S3_Notes&quot;  &quot;S4_Notes&quot;  &quot;S5_Notes&quot; 
-##  [6] &quot;S6_Notes&quot;  &quot;S7_Notes&quot;  &quot;S8_Notes&quot;  &quot;S9_Notes&quot;  &quot;S10_Notes&quot;
-## [11] &quot;S11_Notes&quot; &quot;S12_Notes&quot; &quot;S13_Notes&quot;</code></pre>
+<pre><code>##  [1] &quot;S1_Notes&quot;  &quot;S2_Notes&quot;  &quot;S3_Notes&quot;  &quot;S4_Notes&quot;  &quot;S5_Notes&quot;  &quot;S6_Notes&quot; 
+##  [7] &quot;S7_Notes&quot;  &quot;S8_Notes&quot;  &quot;S9_Notes&quot;  &quot;S10_Notes&quot; &quot;S11_Notes&quot; &quot;S12_Notes&quot;
+## [13] &quot;S13_Notes&quot;</code></pre>
 <pre class="r"><code>str(df_notes)</code></pre>
 <pre><code>## 'data.frame':    12578 obs. of  13 variables:
 ##  $ S1_Notes : Factor w/ 298 levels &quot;&quot;,&quot;\n\nOn March 14, 2020, the Afghan government announced closure of schools for a month. Academic year in most of&quot;| __truncated__,..: 1 1 1 1 1 1 1 1 1 1 ...
@@ -622,6 +671,24 @@ names(df_notes)</code></pre>
 ## [3] &quot;\nArabic Reuters reported that the Egyptian Prime Minister has announced the complete shutdown of schools and universities for a period of 2 weeks starting from the 15th of March 2020. \nSource: Arabic Reuters: https://ara.reuters.com/article/idARAKBN2110RW&quot;                                                                                                                 
 ## [4] &quot;\nclass resumption date of schools of non-tertiary education in Macao will be postponed to 10th February, 2020 (Monday) or later [https://news.gov.mo/detail/en/N20AbkkQOh?19]&quot;                                                                                                                                                                                                    
 ## [5] &quot;\nhttps://en.unesco.org/themes/education-emergencies/coronavirus-school-closures\nhttps://www.theguardian.com/world/2020/mar/12/how-do-coronavirus-containment-measures-vary-across-europe&quot;</code></pre>
+</div>
+<div id="explore-notes-1" class="section level3">
+<h3>Explore Notes</h3>
+<p>To explore the general, we just peaked into one of the columns to see what kind of announcements they are using.</p>
+<pre class="r"><code>df_general = subset( data, select = c(grep( &quot;General&quot; , names( data ) )) )
+names(df_general)</code></pre>
+<pre><code>## [1] &quot;S1_IsGeneral&quot; &quot;S2_IsGeneral&quot; &quot;S3_IsGeneral&quot; &quot;S4_IsGeneral&quot; &quot;S5_IsGeneral&quot;
+## [6] &quot;S6_IsGeneral&quot;</code></pre>
+<pre class="r"><code>str(df_general)</code></pre>
+<pre><code>## 'data.frame':    12578 obs. of  6 variables:
+##  $ S1_IsGeneral: int  NA NA NA NA NA NA NA NA NA NA ...
+##  $ S2_IsGeneral: int  NA NA NA NA NA NA NA NA NA NA ...
+##  $ S3_IsGeneral: int  NA NA NA NA NA NA NA NA NA NA ...
+##  $ S4_IsGeneral: int  NA NA NA NA NA NA NA NA NA NA ...
+##  $ S5_IsGeneral: int  NA NA NA NA NA NA NA NA NA NA ...
+##  $ S6_IsGeneral: int  NA NA NA NA NA NA NA NA NA NA ...</code></pre>
+<pre class="r"><code>levels(df_general$S1_IsGeneral)[1:5]</code></pre>
+<pre><code>## NULL</code></pre>
 </div>
 </div>
 <div id="potential-questions-to-explore" class="section level2">
