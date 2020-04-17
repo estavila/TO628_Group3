@@ -58,19 +58,7 @@ data = read.csv("OxCGRT_Download_080420_161822_Full.csv")
 names(data)
 ```
 
-### Filter DataFrame
 
-```{r ,}
-###
-df$Date<-data.frame(as.Date(as.character(df$Date),"%Y%m%d")) #converting integer data frame to date, then we can calculate date differences (Updated Date (20200408) - Date of closing school, workplace etc.)
-
-# the two lines below didn't run for me...did you use any specific libraries?
-
-#df_0408<-filter(df,df$Date=="2020-04-08") #using the data on date 20200408
-#df_0408<-arrange(df_0408,desc(ConfirmedCases, ConfirmedDeaths))#arranging in a decreasing order of confirmed cases and confirmed deaths
-#df_0408_top30<-head(df_0408,30) #If we decide to use all 118 country data, delete this line.
-str(df$Date)
-```
 
 #### Get Top 30 Countries
 Top 30 is based on the number of Confirmed Cases on 04-08-2020. This can be modified.
@@ -164,6 +152,26 @@ for (country in top30) {
 # sum all previous
 # add to new df
 ```
+
+```{r}
+
+### We do our prediction based on the data on 20200408
+df_20200408<-subset(data,select=c("CountryName","Date","ConfirmedCases","ConfirmedDeaths"))
+df_20200408<-subset(df_20200408,Date=="20200408")
+df_20200408$DeathRate<-round(df_20200408$ConfirmedDeaths/df_20200408$ConfirmedCases,3)
+str(df_20200408)
+install.packages("lubridate")
+library(lubridate)
+df_20200408$Date<- ymd(df_20200408[, 2]) #Converting integer to date formate
+
+### Try to create some variables showing how many days those countries have closed schools, governments and workplace. TBC.
+library(dplyr)
+df_school<-subset(data,select="CountryName")
+df_school$CloseSchool<-ifelse(data$S1_School.closing==2,data$Date,NA)
+
+
+```
+
 
 
 ### Explore Notes Columns
