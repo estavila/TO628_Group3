@@ -138,29 +138,31 @@ measures
 ```{r ,}
 # create empty data frame
 df_flat <- data.frame(Date=as.Date(character()),
-                 CountryName=character(), 
-                 CountryCode=character(),
-                 S1_School.closing = integer(),
-                 S2_Workplace.closing = integer(),
-                 S3_Cancel.public.events = integer(),
-                 S4_Close.public.transport = integer(),
-                 S5_Public.information.campaigns = integer(),
-                 S6_Restrictions.on.internal.movement = integer(),
-                 S7_International.travel.controls = integer(),
-                 S8_Fiscal.measures = double(),
-                 S9_Monetary.measures = double(),
-                 S10_Emergency.investment.in.health.care = double(),
-                 S11_Investment.in.Vaccines = double(),
-                 S12_Testing.framework = integer(),
-                 S13_Contact.tracing = integer(),
-                 StringencyIndexForDisplay = double(),
-                 ConfirmedCases = integer(),
-                 ConfirmedDeaths = integer(),
-                 stringsAsFactors=FALSE) 
+                      Day = integer(),
+                     CountryName=character(), 
+                     CountryCode=character(),
+                     S1_School.closing = integer(),
+                     S2_Workplace.closing = integer(),
+                     S3_Cancel.public.events = integer(),
+                     S4_Close.public.transport = integer(),
+                     S5_Public.information.campaigns = integer(),
+                     S6_Restrictions.on.internal.movement = integer(),
+                     S7_International.travel.controls = integer(),
+                     S8_Fiscal.measures = double(),
+                     S9_Monetary.measures = double(),
+                     S10_Emergency.investment.in.health.care = double(),
+                     S11_Investment.in.Vaccines = double(),
+                     S12_Testing.framework = integer(),
+                     S13_Contact.tracing = integer(),
+                     StringencyIndexForDisplay = double(),
+                     ConfirmedCases = integer(),
+                     ConfirmedDeaths = integer(),
+                     stringsAsFactors=FALSE) 
 
 str(df_flat)
 #testing adding to dataframe
 df_flat <- rbind(df_flat, data.frame(Date=as.Date("1993-03-01"),
+                                     Day = as.integer(1),
                                      CountryName="country",
                                      CountryCode ="cc",
                                      S1_School.closing = as.integer(1),
@@ -180,98 +182,105 @@ df_flat <- rbind(df_flat, data.frame(Date=as.Date("1993-03-01"),
                                      ConfirmedCases = as.integer(15),
                                      ConfirmedDeaths = as.integer(16)))
 
-df_flat <- rbind(df_flat, data.frame(Date=date_,
-                                           CountryName=country,
-                                           CountryCode =cc,
-                                           S1_School.closing = cols['S1_School.closing'],
-                                           S2_Workplace.closing = cols['S2_Workplace.closing'],
-                                           S3_Cancel.public.events = cols['S3_Cancel.public.events'],
-                                           S4_Close.public.transport = cols['S4_Close.public.transport'],
-                                           S5_Public.information.campaigns = cols['S5_Public.information.campaigns'],
-                                           S6_Restrictions.on.internal.movement = cols['S6_Restrictions.on.internal.movement'],
-                                           S7_International.travel.controls = cols['S7_International.travel.controls'],
-                                           S8_Fiscal.measures = cols['S8_Fiscal.measures'],
-                                           S9_Monetary.measures = cols['S9_Monetary.measures'],
-                                           S10_Emergency.investment.in.health.care = cols['S10_Emergency.investment.in.health.care'],
-                                           S11_Investment.in.Vaccines = cols['S11_Investment.in.Vaccines'],
-                                           S12_Testing.framework = cols['S12_Testing.framework'],
-                                           S13_Contact.tracing = cols['S13_Contact.tracing'],
-                                           StringencyIndexForDisplay = cols['StringencyIndexForDisplay'],
-                                           ConfirmedCases = cases,
-                                           ConfirmedDeaths = deaths))
-
 ```
 
 
 ```{r ,}
-## FINDING ZERO DAY OF EACH COUNTRY
-c = 'a'
-print(top30)
+## FLATTENING FOR US onlu 
 # for each country in the top 30
 for (country in top30) {
   # subset of data only for that country
   df_country = subset(df, CountryName == country)
+  cc = levels(factor(df_country$CountryCode))
+  print(country)
   if (country == "United States"){
-    #print('here')
-    #print(df_country$ConfirmedCases)
     x = Position(function(x) x > 100, df_country$ConfirmedCases) - 1
     df_country_reset = tail(df_country, -x)
-    print(x)
-    print(df_country_reset$Date)
     c_dates = sort(unique(df_country_reset$Date, incomparables = FALSE))
     c_dates = c_dates[seq(1, length(c_dates), 7)]
-    print(c_dates)
+    print(c_dates[1])
+    for (d in seq_along(c_dates)){
+      print(c_dates[d])
+      df_date = subset(df_country_reset, Date <= c_dates[d])
+      cols = colSums(df_date[measures], na.rm = TRUE)
+       
+      df_flat <- rbind(df_flat, data.frame(Date = c_dates[d],
+                      Day = as.integer(c_dates[d]-c_dates[1]),
+                       CountryName = country,
+                       CountryCode = cc,
+                       S1_School.closing = as.integer(cols['S1_School.closing']),
+                       S2_Workplace.closing = as.integer(cols['S2_Workplace.closing']),
+                       S3_Cancel.public.events = as.integer(cols['S3_Cancel.public.events']),
+                       S4_Close.public.transport = as.integer(cols['S4_Close.public.transport']),
+                       S5_Public.information.campaigns = as.integer(cols['S5_Public.information.campaigns']),
+                       S6_Restrictions.on.internal.movement = as.integer(cols['S6_Restrictions.on.internal.movement']),
+                       S7_International.travel.controls = as.integer(cols['S7_International.travel.controls']),
+                       S8_Fiscal.measures = cols['S8_Fiscal.measures'],
+                       S9_Monetary.measures = cols['S9_Monetary.measures'],
+                       S10_Emergency.investment.in.health.care = cols['S10_Emergency.investment.in.health.care'],
+                       S11_Investment.in.Vaccines = cols['S11_Investment.in.Vaccines'],
+                       S12_Testing.framework = as.integer(cols['S12_Testing.framework']),
+                       S13_Contact.tracing = as.integer(cols['S13_Contact.tracing']),
+                       StringencyIndexForDisplay = cols['StringencyIndexForDisplay'],
+                       ConfirmedCases = as.integer(df_date$ConfirmedCases[df_date$Date == c_dates[d]]),
+                       ConfirmedDeaths = as.integer(df_date$ConfirmedDeaths[df_date$Date == c_dates[d]])))
+    }
+    
   }
+  
 }
 
-
-
-
+str(df_flat)
 
 ```
 
 ###### Finds sum of each column
 ```{r ,}
-c = 'a'
+## FLATTENING FOR ALL 
 # for each country in the top 30
 for (country in top30) {
-  # for each date in dates list
-  for (date in dates) {
-    # subset of data just up to that date and only for that country
-    df_date = subset(df, CountryName == country & Date <= date)
-    if (country == "United States" & c == 'a'){
-      date_ = max(df_date$date, na.rm = TRUE)
-      print(date_)
-      c = 'b'
-    }
+  # subset of data only for that country
+  df_country = subset(df, CountryName == country)
+  cc = levels(factor(df_country$CountryCode))
+  print(country)
+  
+  x = Position(function(x) x > 100, df_country$ConfirmedCases) - 1
+  df_country_reset = tail(df_country, -x)
+  c_dates = sort(unique(df_country_reset$Date, incomparables = FALSE))
+  c_dates = c_dates[seq(1, length(c_dates), 7)]
+  print(c_dates[1])
+  for (d in seq_along(c_dates)){
+    print(c_dates[d])
+    df_date = subset(df_country_reset, Date <= c_dates[d])
+    cols = colSums(df_date[measures], na.rm = TRUE)
     
-    #date_ = max(df_date$date, na.rm = TRUE)
-    #print(date_)
-    #cc = levels(factor(df_date$CountryCode))
-    #cases = max(df_date$ConfirmedCases, na.rm = TRUE)
-    #deaths = max(df_date$ConfirmedDeaths, na.rm = TRUE)
-    
-    #df_measures = df_date[measures]
-    
-    if (country == "United States" & c == 'c') {
-      print(date_)
-      print(typeof(date_))
-      #print(cc)
-      #print(cases)
-      cols = colSums(df_measures, na.rm = TRUE)
-      print(cols)
-      
-      c = 'b'
-      #print(cols['S1_School.closing'])
-      #print(cols)
-    }
+    # add date and country to dataframe
+    df_flat <- rbind(df_flat, data.frame(Date = c_dates[d],
+                    Day = as.integer(c_dates[d]-c_dates[1]),
+                     CountryName = country,
+                     CountryCode = cc,
+                     S1_School.closing = as.integer(cols['S1_School.closing']),
+                     S2_Workplace.closing = as.integer(cols['S2_Workplace.closing']),
+                     S3_Cancel.public.events = as.integer(cols['S3_Cancel.public.events']),
+                     S4_Close.public.transport = as.integer(cols['S4_Close.public.transport']),
+                     S5_Public.information.campaigns = as.integer(cols['S5_Public.information.campaigns']),
+                     S6_Restrictions.on.internal.movement = as.integer(cols['S6_Restrictions.on.internal.movement']),
+                     S7_International.travel.controls = as.integer(cols['S7_International.travel.controls']),
+                     S8_Fiscal.measures = cols['S8_Fiscal.measures'],
+                     S9_Monetary.measures = cols['S9_Monetary.measures'],
+                     S10_Emergency.investment.in.health.care = cols['S10_Emergency.investment.in.health.care'],
+                     S11_Investment.in.Vaccines = cols['S11_Investment.in.Vaccines'],
+                     S12_Testing.framework = as.integer(cols['S12_Testing.framework']),
+                     S13_Contact.tracing = as.integer(cols['S13_Contact.tracing']),
+                     StringencyIndexForDisplay = cols['StringencyIndexForDisplay'],
+                     ConfirmedCases = as.integer(df_date$ConfirmedCases[df_date$Date == c_dates[d]]),
+                     ConfirmedDeaths = as.integer(df_date$ConfirmedDeaths[df_date$Date == c_dates[d]])))
   }
+  
 }
 
+str(df_flat)
 
-
-# sum all previous up to date
-# add to new df
 ```
 
 ```{r}
