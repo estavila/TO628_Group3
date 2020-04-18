@@ -120,8 +120,15 @@ For most if not all measures, NA or NULL values were replaced with the most rece
 #
 ```
 
+#### Dealing with General vs Targetted
+Data includes targeted and general measures. Should we be treating them differently?
+```{r ,}
+#
+```
+
+
 ### Flatten Data
-#### List of Dates  of Interest
+#### List of Dates of Interest
 Retrieving every 7th day since Jan 1.
 ```{r ,}
 # turn date column into date format and remove duplicate dates
@@ -130,7 +137,6 @@ dates = sort(unique(df$Date, incomparables = FALSE))
 
 # extract every 7th date
 dates = dates[seq(1, length(dates), 7)]
-
 dates
 ```
 #### Separate Flattening Columns
@@ -138,30 +144,109 @@ Some columns are informational and do not need to be flattened. Some measures ne
 ```{r ,}
 info = c("Date", "CountryName", "CountryCode", "ConfirmedCases", "ConfirmedDeaths") #, "StringencyIndexForDisplay", "X")
 measures = names(df)[!(names(df) %in% info)]
-info
 measures
 ```
-
+#### Flatten Data into new DataFrame
 ```{r ,}
+# create empty data frame
+df_flat <- data.frame(Date=as.Date(character()),
+                 CountryName=character(), 
+                 CountryCode=character(),
+                 S1_School.closing = integer(),
+                 S2_Workplace.closing = integer(),
+                 S3_Cancel.public.events = integer(),
+                 S4_Close.public.transport = integer(),
+                 S5_Public.information.campaigns = integer(),
+                 S6_Restrictions.on.internal.movement = integer(),
+                 S7_International.travel.controls = integer(),
+                 S8_Fiscal.measures = double(),
+                 S9_Monetary.measures = double(),
+                 S10_Emergency.investment.in.health.care = double(),
+                 S11_Investment.in.Vaccines = double(),
+                 S12_Testing.framework = integer(),
+                 S13_Contact.tracing = integer(),
+                 StringencyIndexForDisplay = double(),
+                 ConfirmedCases = integer(),
+                 ConfirmedDeaths = integer(),
+                 stringsAsFactors=FALSE) 
+str(df)
+str(df_flat)
+
+df_flat <- rbind(df_flat, data.frame(Date=as.Date("1993-03-01"),
+                                     CountryName="country",
+                                     CountryCode ="cc",
+                                     S1_School.closing = 1,
+                                     S2_Workplace.closing = 2,
+                                     S3_Cancel.public.events = 3,
+                                     S4_Close.public.transport = 4,
+                                     S5_Public.information.campaigns = 5,
+                                     S6_Restrictions.on.internal.movement = 6,
+                                     S7_International.travel.controls = 7.1,
+                                     S8_Fiscal.measures = 8.1,
+                                     S9_Monetary.measures = 9.1,
+                                     S10_Emergency.investment.in.health.care = 10.1,
+                                     S11_Investment.in.Vaccines = 11.1,
+                                     S12_Testing.framework = 12,
+                                     S13_Contact.tracing = 13,
+                                     StringencyIndexForDisplay = 14.1,
+                                     ConfirmedCases = 15,
+                                     ConfirmedDeaths = 16))
+
+
+df_flat <- rbind(df_flat, c(as.Date("1993-03-01"),"cou", "ccc", 1,2,3,4,5,6,7,8,9,10,11,12,13,14,15, 16))
+
 # for each country in the top 30
-c = "a"
 for (country in top30) {
   # for each date in dates list
   for (date in dates) {
     # subset of data just up to that date and only for that country
-    df_date = subset(df, CountryName == country & Date == date)
+    df_date = subset(df, CountryName == country & Date <= date)
+    date_ = max(df_date$date, na.rm = TRUE)
+    cc = levels(factor(df_date$CountryCode))
+    cases = max(df_date$ConfirmedCases, na.rm = TRUE)
+    deaths = max(df_date$ConfirmedDeaths, na.rm = TRUE)
     
-    if (country == "United States" & c == "a") {
-      #print(df_date$S10_Investment.in.Vaccines)
-      str(df_date)
-      c = "c"
+    df_measures = df_date[measures]
+    
+    if (country == "United States") {
+      print(date_)
+      print(typeof(date_))
+      #print(cc)
+      #print(cases)
+      cols = colSums(df_measures, na.rm = TRUE)
+      df_flat <- rbind(df_flat, data.frame(Date=date_,
+                                           CountryName=country,
+                                           CountryCode =cc,
+                                           S1_School.closing = cols['S1_School.closing'],
+                                           S2_Workplace.closing = cols['S2_Workplace.closing'],
+                                           S3_Cancel.public.events = cols['S3_Cancel.public.events'],
+                                           S4_Close.public.transport = cols['S4_Close.public.transport'],
+                                           S5_Public.information.campaigns = cols['S5_Public.information.campaigns'],
+                                           S6_Restrictions.on.internal.movement = cols['S6_Restrictions.on.internal.movement'],
+                                           S7_International.travel.controls = cols['S7_International.travel.controls'],
+                                           S8_Fiscal.measures = cols['S8_Fiscal.measures'],
+                                           S9_Monetary.measures = cols['S9_Monetary.measures'],
+                                           S10_Emergency.investment.in.health.care = cols['S10_Emergency.investment.in.health.care'],
+                                           S11_Investment.in.Vaccines = cols['S11_Investment.in.Vaccines'],
+                                           S12_Testing.framework = cols['S12_Testing.framework'],
+                                           S13_Contact.tracing = cols['S13_Contact.tracing'],
+                                           StringencyIndexForDisplay = cols['StringencyIndexForDisplay'],
+                                           ConfirmedCases = cases,
+                                           ConfirmedDeaths = deaths))
+      #print(cols['S1_School.closing'])
+      #print(cols)
     }
   }
-  
 }
 
+df<-data.frame(1,2)
+names(df)<-c("hello","goodbye")
+str(df)
 
-# sum all previous
+newdf2<-rbind(df, data.frame(hello=2, goodbye=3))
+str(newdf2)
+
+# sum all previous up to date
 # add to new df
 ```
 
