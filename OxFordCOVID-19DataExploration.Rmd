@@ -157,18 +157,18 @@ df_flat <- data.frame(Date=as.Date(character()),
                  ConfirmedCases = integer(),
                  ConfirmedDeaths = integer(),
                  stringsAsFactors=FALSE) 
-str(df)
-str(df_flat)
 
+str(df_flat)
+#testing adding to dataframe
 df_flat <- rbind(df_flat, data.frame(Date=as.Date("1993-03-01"),
                                      CountryName="country",
                                      CountryCode ="cc",
-                                     S1_School.closing = 1,
-                                     S2_Workplace.closing = 2,
-                                     S3_Cancel.public.events = 3,
-                                     S4_Close.public.transport = 4,
-                                     S5_Public.information.campaigns = 5,
-                                     S6_Restrictions.on.internal.movement = 6,
+                                     S1_School.closing = as.integer(1),
+                                     S2_Workplace.closing = as.integer(2),
+                                     S3_Cancel.public.events = as.integer(3),
+                                     S4_Close.public.transport = as.integer(4),
+                                     S5_Public.information.campaigns = as.integer(5),
+                                     S6_Restrictions.on.internal.movement = as.integer(6),
                                      S7_International.travel.controls = 7.1,
                                      S8_Fiscal.measures = 8.1,
                                      S9_Monetary.measures = 9.1,
@@ -177,32 +177,10 @@ df_flat <- rbind(df_flat, data.frame(Date=as.Date("1993-03-01"),
                                      S12_Testing.framework = 12,
                                      S13_Contact.tracing = 13,
                                      StringencyIndexForDisplay = 14.1,
-                                     ConfirmedCases = 15,
-                                     ConfirmedDeaths = 16))
+                                     ConfirmedCases = as.integer(15),
+                                     ConfirmedDeaths = as.integer(16)))
 
-
-df_flat <- rbind(df_flat, c(as.Date("1993-03-01"),"cou", "ccc", 1,2,3,4,5,6,7,8,9,10,11,12,13,14,15, 16))
-
-# for each country in the top 30
-for (country in top30) {
-  # for each date in dates list
-  for (date in dates) {
-    # subset of data just up to that date and only for that country
-    df_date = subset(df, CountryName == country & Date <= date)
-    date_ = max(df_date$date, na.rm = TRUE)
-    cc = levels(factor(df_date$CountryCode))
-    cases = max(df_date$ConfirmedCases, na.rm = TRUE)
-    deaths = max(df_date$ConfirmedDeaths, na.rm = TRUE)
-    
-    df_measures = df_date[measures]
-    
-    if (country == "United States") {
-      print(date_)
-      print(typeof(date_))
-      #print(cc)
-      #print(cases)
-      cols = colSums(df_measures, na.rm = TRUE)
-      df_flat <- rbind(df_flat, data.frame(Date=date_,
+df_flat <- rbind(df_flat, data.frame(Date=date_,
                                            CountryName=country,
                                            CountryCode =cc,
                                            S1_School.closing = cols['S1_School.closing'],
@@ -221,18 +199,76 @@ for (country in top30) {
                                            StringencyIndexForDisplay = cols['StringencyIndexForDisplay'],
                                            ConfirmedCases = cases,
                                            ConfirmedDeaths = deaths))
+
+```
+
+
+```{r ,}
+## FINDING ZERO DAY OF EACH COUNTRY
+c = 'a'
+print(top30)
+# for each country in the top 30
+for (country in top30) {
+  # subset of data only for that country
+  df_country = subset(df, CountryName == country)
+  if (country == "United States"){
+    #print('here')
+    #print(df_country$ConfirmedCases)
+    x = Position(function(x) x > 100, df_country$ConfirmedCases) - 1
+    df_country_reset = tail(df_country, -x)
+    print(x)
+    print(df_country_reset$Date)
+    c_dates = sort(unique(df_country_reset$Date, incomparables = FALSE))
+    c_dates = c_dates[seq(1, length(c_dates), 7)]
+    print(c_dates)
+  }
+}
+
+
+
+
+
+```
+
+###### Finds sum of each column
+```{r ,}
+c = 'a'
+# for each country in the top 30
+for (country in top30) {
+  # for each date in dates list
+  for (date in dates) {
+    # subset of data just up to that date and only for that country
+    df_date = subset(df, CountryName == country & Date <= date)
+    if (country == "United States" & c == 'a'){
+      date_ = max(df_date$date, na.rm = TRUE)
+      print(date_)
+      c = 'b'
+    }
+    
+    #date_ = max(df_date$date, na.rm = TRUE)
+    #print(date_)
+    #cc = levels(factor(df_date$CountryCode))
+    #cases = max(df_date$ConfirmedCases, na.rm = TRUE)
+    #deaths = max(df_date$ConfirmedDeaths, na.rm = TRUE)
+    
+    #df_measures = df_date[measures]
+    
+    if (country == "United States" & c == 'c') {
+      print(date_)
+      print(typeof(date_))
+      #print(cc)
+      #print(cases)
+      cols = colSums(df_measures, na.rm = TRUE)
+      print(cols)
+      
+      c = 'b'
       #print(cols['S1_School.closing'])
       #print(cols)
     }
   }
 }
 
-df<-data.frame(1,2)
-names(df)<-c("hello","goodbye")
-str(df)
 
-newdf2<-rbind(df, data.frame(hello=2, goodbye=3))
-str(newdf2)
 
 # sum all previous up to date
 # add to new df
