@@ -1,11 +1,10 @@
 <!DOCTYPE html>
 
-<html xmlns="http://www.w3.org/1999/xhtml">
+<html>
 
 <head>
 
 <meta charset="utf-8" />
-<meta http-equiv="Content-Type" content="text/html; charset=utf-8" />
 <meta name="generator" content="pandoc" />
 <meta http-equiv="X-UA-Compatible" content="IE=EDGE" />
 
@@ -270,7 +269,6 @@ code {
 }
 img {
   max-width:100%;
-  height: auto;
 }
 .tabbed-pane {
   padding-top: 12px;
@@ -332,6 +330,7 @@ summary {
   border: none;
   display: inline-block;
   border-radius: 4px;
+  background-color: transparent;
 }
 
 .tabset-dropdown > .nav-tabs.nav-tabs-open > li {
@@ -458,9 +457,20 @@ names(data)</code></pre>
 data_0408 = subset(data, data$Date == 20200408)
 # order data in descending order based on num cases and deaths
 data_0408 = data_0408[order(-data_0408$ConfirmedCases, -data_0408$ConfirmedDeaths),]
+# data_04 = data_0408[data_0408$ConfirmedCases &gt; 0,]
+# data_04 = data_04[, c('CountryName', 'ConfirmedCases')]
+# str(data_04)
+# top = head(data_04,30)
+# top$CountryName = factor(top$CountryName)
+# str(top)
+# print(top)
+# print(data_04$ConfirmedCases)
+# print(levels(factor(data_0408$CountryName)))
+
 
 # take the levels of first 30 rows of the CountryName column
 top30 = levels(factor(head(data_0408,30)$CountryName))
+
 top30</code></pre>
 <pre><code>##  [1] &quot;Australia&quot;      &quot;Austria&quot;        &quot;Belgium&quot;        &quot;Brazil&quot;        
 ##  [5] &quot;Canada&quot;         &quot;Chile&quot;          &quot;China&quot;          &quot;Denmark&quot;       
@@ -557,56 +567,49 @@ str(df_top30)</code></pre>
 ##  3rd Qu.:0.000e+00                       3rd Qu.:        0         
 ##  Max.   :1.500e+11                       Max.   :826000000         
 ##  NA's   :169                             NA's   :279               
-##  S12_Testing.framework S13_Contact.tracing ConfirmedCases  
-##  Min.   :0.0000        Min.   :0.0000      Min.   :     0  
-##  1st Qu.:0.0000        1st Qu.:0.0000      1st Qu.:     0  
-##  Median :1.0000        Median :0.0000      Median :     7  
-##  Mean   :0.7556        Mean   :0.6947      Mean   :  6624  
-##  3rd Qu.:1.0000        3rd Qu.:1.0000      3rd Qu.:  1327  
-##  Max.   :3.0000        Max.   :2.0000      Max.   :398809  
-##  NA's   :441           NA's   :474         NA's   :290     
-##  ConfirmedDeaths   StringencyIndexForDisplay    X          
-##  Min.   :    0.0   Min.   :  0.00            Mode:logical  
-##  1st Qu.:    0.0   1st Qu.:  0.00            NA's:2970     
-##  Median :    0.0   Median : 14.29                          
-##  Mean   :  319.7   Mean   : 28.21                          
-##  3rd Qu.:   13.0   3rd Qu.: 61.90                          
-##  Max.   :17129.0   Max.   :100.00                          
-##  NA's   :290</code></pre>
+##  S12_Testing.framework S13_Contact.tracing ConfirmedCases   ConfirmedDeaths  
+##  Min.   :0.0000        Min.   :0.0000      Min.   :     0   Min.   :    0.0  
+##  1st Qu.:0.0000        1st Qu.:0.0000      1st Qu.:     0   1st Qu.:    0.0  
+##  Median :1.0000        Median :0.0000      Median :     7   Median :    0.0  
+##  Mean   :0.7556        Mean   :0.6947      Mean   :  6624   Mean   :  319.7  
+##  3rd Qu.:1.0000        3rd Qu.:1.0000      3rd Qu.:  1327   3rd Qu.:   13.0  
+##  Max.   :3.0000        Max.   :2.0000      Max.   :398809   Max.   :17129.0  
+##  NA's   :441           NA's   :474         NA's   :290      NA's   :290      
+##  StringencyIndexForDisplay    X          
+##  Min.   :  0.00            Mode:logical  
+##  1st Qu.:  0.00            NA's:2970     
+##  Median : 14.29                          
+##  Mean   : 28.21                          
+##  3rd Qu.: 61.90                          
+##  Max.   :100.00                          
+## </code></pre>
 <pre class="r"><code>df = df_top30</code></pre>
 </div>
 <div id="deal-with-nas-and-nulls" class="section level4">
 <h4>Deal with NAs and NULLs</h4>
 <p>For most if not all measures, NA or NULL values were replaced with the most recent non-zero value for that country when possible, else zero</p>
+<pre class="r"><code># need to figure out how to make these take last non-zero value
+df$ConfirmedCases[df$Date == 20200101 &amp; is.na(df$ConfirmedCases)] &lt;- 0</code></pre>
+</div>
+<div id="dealing-with-general-vs-targetted" class="section level4">
+<h4>Dealing with General vs Targetted</h4>
+<p>Data includes targeted and general measures. Should we be treating them differently?</p>
 <pre class="r"><code>#</code></pre>
+</div>
+<div id="converting-date-format" class="section level4">
+<h4>Converting Date Format</h4>
+<pre class="r"><code># turn date column into date format
+df$Date &lt;- as.Date(as.character(df$Date),&quot;%Y%m%d&quot;)</code></pre>
 </div>
 </div>
 <div id="flatten-data" class="section level3">
 <h3>Flatten Data</h3>
-<div id="list-of-dates-of-interest" class="section level4">
-<h4>List of Dates of Interest</h4>
-<p>Retrieving every 7th day since Jan 1.</p>
-<pre class="r"><code># turn date column into date format and remove duplicate dates
-df$Date &lt;- as.Date(as.character(df$Date),&quot;%Y%m%d&quot;)
-dates = sort(unique(df$Date, incomparables = FALSE))
-
-# extract every 7th date
-dates = dates[seq(1, length(dates), 7)]
-
-dates</code></pre>
-<pre><code>##  [1] &quot;2020-01-01&quot; &quot;2020-01-08&quot; &quot;2020-01-15&quot; &quot;2020-01-22&quot; &quot;2020-01-29&quot;
-##  [6] &quot;2020-02-05&quot; &quot;2020-02-12&quot; &quot;2020-02-19&quot; &quot;2020-02-26&quot; &quot;2020-03-04&quot;
-## [11] &quot;2020-03-11&quot; &quot;2020-03-18&quot; &quot;2020-03-25&quot; &quot;2020-04-01&quot; &quot;2020-04-08&quot;</code></pre>
-</div>
 <div id="separate-flattening-columns" class="section level4">
 <h4>Separate Flattening Columns</h4>
 <p>Some columns are informational and do not need to be flattened. Some measures need to be summed to that point. Others can just take the face value?</p>
 <pre class="r"><code>info = c(&quot;Date&quot;, &quot;CountryName&quot;, &quot;CountryCode&quot;, &quot;ConfirmedCases&quot;, &quot;ConfirmedDeaths&quot;) #, &quot;StringencyIndexForDisplay&quot;, &quot;X&quot;)
 measures = names(df)[!(names(df) %in% info)]
-info</code></pre>
-<pre><code>## [1] &quot;Date&quot;            &quot;CountryName&quot;     &quot;CountryCode&quot;     &quot;ConfirmedCases&quot; 
-## [5] &quot;ConfirmedDeaths&quot;</code></pre>
-<pre class="r"><code>measures</code></pre>
+measures</code></pre>
 <pre><code>##  [1] &quot;S1_School.closing&quot;                      
 ##  [2] &quot;S2_Workplace.closing&quot;                   
 ##  [3] &quot;S3_Cancel.public.events&quot;                
@@ -622,54 +625,257 @@ info</code></pre>
 ## [13] &quot;S13_Contact.tracing&quot;                    
 ## [14] &quot;StringencyIndexForDisplay&quot;              
 ## [15] &quot;X&quot;</code></pre>
+<p>Flatten Data into new DataFrame</p>
+<pre class="r"><code># create empty data frame
+df_flat &lt;- data.frame(Date=as.Date(character()),
+                      Day = integer(),
+                     CountryName=character(), 
+                     CountryCode=character(),
+                     S1_School.closing = integer(),
+                     S2_Workplace.closing = integer(),
+                     S3_Cancel.public.events = integer(),
+                     S4_Close.public.transport = integer(),
+                     S5_Public.information.campaigns = integer(),
+                     S6_Restrictions.on.internal.movement = integer(),
+                     S7_International.travel.controls = integer(),
+                     S8_Fiscal.measures = double(),
+                     S9_Monetary.measures = double(),
+                     S10_Emergency.investment.in.health.care = double(),
+                     S11_Investment.in.Vaccines = double(),
+                     S12_Testing.framework = integer(),
+                     S13_Contact.tracing = integer(),
+                     StringencyIndexForDisplay = double(),
+                     ConfirmedCases = integer(),
+                     ConfirmedDeaths = integer(),
+                     stringsAsFactors=FALSE) 
+
+str(df_flat)</code></pre>
+<pre><code>## 'data.frame':    0 obs. of  20 variables:
+##  $ Date                                   : 'Date' num(0) 
+##  $ Day                                    : int 
+##  $ CountryName                            : chr 
+##  $ CountryCode                            : chr 
+##  $ S1_School.closing                      : int 
+##  $ S2_Workplace.closing                   : int 
+##  $ S3_Cancel.public.events                : int 
+##  $ S4_Close.public.transport              : int 
+##  $ S5_Public.information.campaigns        : int 
+##  $ S6_Restrictions.on.internal.movement   : int 
+##  $ S7_International.travel.controls       : int 
+##  $ S8_Fiscal.measures                     : num 
+##  $ S9_Monetary.measures                   : num 
+##  $ S10_Emergency.investment.in.health.care: num 
+##  $ S11_Investment.in.Vaccines             : num 
+##  $ S12_Testing.framework                  : int 
+##  $ S13_Contact.tracing                    : int 
+##  $ StringencyIndexForDisplay              : num 
+##  $ ConfirmedCases                         : int 
+##  $ ConfirmedDeaths                        : int</code></pre>
+<pre class="r"><code>## FLATTENING FOR ONE Country to debug only 
+# for each country in the top 30
+# for (country in top30) {
+#   # subset of data only for that country
+#   df_country = subset(df, CountryName == country)
+#   cc = levels(factor(df_country$CountryCode))
+#   print(country)
+#   if (country == &quot;China&quot;){
+#     
+#     #Take care of null values for Confirmed Cases
+#     df_country$ConfirmedCases = na.locf(with(df_country, ifelse(df_country$ConfirmedCases == 'NA', NA_real_, df_country$ConfirmedCases)), fromLast = FALSE)
+#     
+#     x = Position(function(x) x &gt; 100, df_country$ConfirmedCases) - 1
+#     df_country_reset = tail(df_country, -x)
+#     c_dates = sort(unique(df_country_reset$Date, incomparables = FALSE))
+#     c_dates = c_dates[seq(1, length(c_dates), 7)]
+#     for (d in seq_along(c_dates)){
+#       print(c_dates[d])
+#       df_date = subset(df_country_reset, Date &lt;= c_dates[d])
+#       cols = colSums(df_date[measures], na.rm = TRUE)
+#        
+#       df_flat &lt;- rbind(df_flat, data.frame(Date = c_dates[d],
+#                       Day = as.integer(c_dates[d]-c_dates[1]),
+#                        CountryName = country,
+#                        CountryCode = cc,
+#                        S1_School.closing = as.integer(cols['S1_School.closing']),
+#                        S2_Workplace.closing = as.integer(cols['S2_Workplace.closing']),
+#                        S3_Cancel.public.events = as.integer(cols['S3_Cancel.public.events']),
+#                        S4_Close.public.transport = as.integer(cols['S4_Close.public.transport']),
+#                        S5_Public.information.campaigns = as.integer(cols['S5_Public.information.campaigns']),
+#                        S6_Restrictions.on.internal.movement = as.integer(cols['S6_Restrictions.on.internal.movement']),
+#                        S7_International.travel.controls = as.integer(cols['S7_International.travel.controls']),
+#                        S8_Fiscal.measures = cols['S8_Fiscal.measures'],
+#                        S9_Monetary.measures = cols['S9_Monetary.measures'],
+#                        S10_Emergency.investment.in.health.care = cols['S10_Emergency.investment.in.health.care'],
+#                        S11_Investment.in.Vaccines = cols['S11_Investment.in.Vaccines'],
+#                        S12_Testing.framework = as.integer(cols['S12_Testing.framework']),
+#                        S13_Contact.tracing = as.integer(cols['S13_Contact.tracing']),
+#                        StringencyIndexForDisplay = cols['StringencyIndexForDisplay'],
+#                        ConfirmedCases = as.integer(df_date$ConfirmedCases[df_date$Date == c_dates[d]]),
+#                        ConfirmedDeaths = as.integer(df_date$ConfirmedDeaths[df_date$Date == c_dates[d]])))
+#     }
+#   }
+# }
+# 
+# str(df_flat)</code></pre>
+<div id="section" class="section level6">
+<h6></h6>
+<pre class="r"><code>## FLATTENING FOR ALL 
+# some countries have an issue here...working on it
+library(zoo)</code></pre>
+<pre><code>## 
+## Attaching package: 'zoo'</code></pre>
+<pre><code>## The following objects are masked from 'package:base':
+## 
+##     as.Date, as.Date.numeric</code></pre>
 <pre class="r"><code># for each country in the top 30
-c = &quot;a&quot;
 for (country in top30) {
-  # for each date in dates list
-  for (date in dates) {
-    # subset of data just up to that date and only for that country
-    df_date = subset(df, CountryName == country &amp; Date == date)
-    
-    if (country == &quot;United States&quot; &amp; c == &quot;a&quot;) {
-      #print(df_date$S10_Investment.in.Vaccines)
-      str(df_date)
-      c = &quot;c&quot;
-    }
-  }
+  # subset of data only for that country
+  df_country = subset(df, CountryName == country)
+  cc = levels(factor(df_country$CountryCode))
+  print(country)
   
+  df_country$ConfirmedCases = na.locf(with(df_country, ifelse(df_country$ConfirmedCases == 'NA', NA_real_, df_country$ConfirmedCases)), fromLast = FALSE)
+
+  x = Position(function(x) x &gt; 0, df_country$ConfirmedCases)
+  df_country_reset = tail(df_country, -x)
+  c_dates = sort(unique(df_country_reset$Date, incomparables = FALSE))
+  c_dates = c_dates[seq(1, length(c_dates), 7)]
+  print(c_dates[1])
+  for (d in seq_along(c_dates)){
+    #print(c_dates[d])
+    df_date = subset(df_country_reset, Date &lt;= c_dates[d])
+    cols = colSums(df_date[measures], na.rm = TRUE)
+
+    # add date and country to dataframe
+    df_flat &lt;- rbind(df_flat, data.frame(Date = c_dates[d],
+                    Day = as.integer(c_dates[d]-c_dates[1]),
+                     CountryName = country,
+                     CountryCode = cc,
+                     S1_School.closing = as.integer(cols['S1_School.closing']),
+                     S2_Workplace.closing = as.integer(cols['S2_Workplace.closing']),
+                     S3_Cancel.public.events = as.integer(cols['S3_Cancel.public.events']),
+                     S4_Close.public.transport = as.integer(cols['S4_Close.public.transport']),
+                     S5_Public.information.campaigns = as.integer(cols['S5_Public.information.campaigns']),
+                     S6_Restrictions.on.internal.movement = as.integer(cols['S6_Restrictions.on.internal.movement']),
+                     S7_International.travel.controls = as.integer(cols['S7_International.travel.controls']),
+                     S8_Fiscal.measures = cols['S8_Fiscal.measures'],
+                     S9_Monetary.measures = cols['S9_Monetary.measures'],
+                     S10_Emergency.investment.in.health.care = cols['S10_Emergency.investment.in.health.care'],
+                     S11_Investment.in.Vaccines = cols['S11_Investment.in.Vaccines'],
+                     S12_Testing.framework = as.integer(cols['S12_Testing.framework']),
+                     S13_Contact.tracing = as.integer(cols['S13_Contact.tracing']),
+                     StringencyIndexForDisplay = cols['StringencyIndexForDisplay'],
+                     ConfirmedCases = as.integer(df_date$ConfirmedCases[df_date$Date == c_dates[d]]),
+                     ConfirmedDeaths = as.integer(df_date$ConfirmedDeaths[df_date$Date == c_dates[d]])))
+  }
+
 }</code></pre>
-<pre><code>## 'data.frame':    1 obs. of  20 variables:
-##  $ CountryName                            : Factor w/ 30 levels &quot;Australia&quot;,&quot;Austria&quot;,..: 30
-##  $ CountryCode                            : Factor w/ 30 levels &quot;AUS&quot;,&quot;AUT&quot;,&quot;BEL&quot;,..: 30
-##  $ Date                                   : Date, format: &quot;2020-01-01&quot;
-##  $ S1_School.closing                      : int 0
-##  $ S2_Workplace.closing                   : int 0
-##  $ S3_Cancel.public.events                : int 0
-##  $ S4_Close.public.transport              : int 0
-##  $ S5_Public.information.campaigns        : int 0
-##  $ S6_Restrictions.on.internal.movement   : int 0
-##  $ S7_International.travel.controls       : int NA
-##  $ S8_Fiscal.measures                     : num 0
-##  $ S9_Monetary.measures                   : num 1.75
-##  $ S10_Emergency.investment.in.health.care: num 0
-##  $ S11_Investment.in.Vaccines             : num 0
-##  $ S12_Testing.framework                  : int 0
-##  $ S13_Contact.tracing                    : int 0
-##  $ ConfirmedCases                         : int 0
-##  $ ConfirmedDeaths                        : int 0
-##  $ StringencyIndexForDisplay              : num 0
-##  $ X                                      : logi NA</code></pre>
-<pre class="r"><code># sum all previous
-# add to new df</code></pre>
+<pre><code>## [1] &quot;Australia&quot;
+## [1] &quot;2020-01-26&quot;
+## [1] &quot;Austria&quot;
+## [1] &quot;2020-02-27&quot;
+## [1] &quot;Belgium&quot;
+## [1] &quot;2020-02-05&quot;
+## [1] &quot;Brazil&quot;
+## [1] &quot;2020-02-27&quot;
+## [1] &quot;Canada&quot;
+## [1] &quot;2020-01-27&quot;
+## [1] &quot;Chile&quot;
+## [1] &quot;2020-03-05&quot;
+## [1] &quot;China&quot;
+## [1] &quot;2020-01-02&quot;
+## [1] &quot;Denmark&quot;
+## [1] &quot;2020-02-28&quot;
+## [1] &quot;Ecuador&quot;
+## [1] &quot;2020-03-02&quot;
+## [1] &quot;France&quot;
+## [1] &quot;2020-01-26&quot;
+## [1] &quot;Germany&quot;
+## [1] &quot;2020-01-29&quot;
+## [1] &quot;India&quot;
+## [1] &quot;2020-01-31&quot;
+## [1] &quot;Iran&quot;
+## [1] &quot;2020-02-21&quot;
+## [1] &quot;Ireland&quot;
+## [1] &quot;2020-03-02&quot;
+## [1] &quot;Israel&quot;
+## [1] &quot;2020-02-23&quot;
+## [1] &quot;Italy&quot;
+## [1] &quot;2020-02-01&quot;
+## [1] &quot;Netherlands&quot;
+## [1] &quot;2020-02-29&quot;
+## [1] &quot;Norway&quot;
+## [1] &quot;2020-02-28&quot;
+## [1] &quot;Pakistan&quot;
+## [1] &quot;2020-02-28&quot;
+## [1] &quot;Poland&quot;
+## [1] &quot;2020-03-05&quot;
+## [1] &quot;Portugal&quot;
+## [1] &quot;2020-03-04&quot;
+## [1] &quot;Romania&quot;
+## [1] &quot;2020-02-28&quot;
+## [1] &quot;Russia&quot;
+## [1] &quot;2020-02-02&quot;
+## [1] &quot;South Korea&quot;
+## [1] &quot;2020-01-21&quot;
+## [1] &quot;Spain&quot;
+## [1] &quot;2020-02-02&quot;
+## [1] &quot;Sweden&quot;
+## [1] &quot;2020-02-02&quot;
+## [1] &quot;Switzerland&quot;
+## [1] &quot;2020-02-27&quot;
+## [1] &quot;Turkey&quot;
+## [1] &quot;2020-03-13&quot;
+## [1] &quot;United Kingdom&quot;
+## [1] &quot;2020-02-01&quot;
+## [1] &quot;United States&quot;
+## [1] &quot;2020-01-22&quot;</code></pre>
+<pre class="r"><code>str(df_flat)</code></pre>
+<pre><code>## 'data.frame':    246 obs. of  20 variables:
+##  $ Date                                   : Date, format: &quot;2020-01-26&quot; &quot;2020-02-02&quot; ...
+##  $ Day                                    : int  0 7 14 21 28 35 42 49 56 63 ...
+##  $ CountryName                            : Factor w/ 30 levels &quot;Australia&quot;,&quot;Austria&quot;,..: 1 1 1 1 1 1 1 1 1 1 ...
+##  $ CountryCode                            : Factor w/ 30 levels &quot;AUS&quot;,&quot;AUT&quot;,&quot;BEL&quot;,..: 1 1 1 1 1 1 1 1 1 1 ...
+##  $ S1_School.closing                      : int  0 0 0 0 0 0 0 0 2 16 ...
+##  $ S2_Workplace.closing                   : int  0 0 0 0 0 0 0 0 0 12 ...
+##  $ S3_Cancel.public.events                : int  0 0 0 0 0 0 0 0 12 26 ...
+##  $ S4_Close.public.transport              : int  0 0 0 0 0 0 0 0 0 0 ...
+##  $ S5_Public.information.campaigns        : int  1 8 15 22 29 36 43 50 57 64 ...
+##  $ S6_Restrictions.on.internal.movement   : int  0 0 0 0 0 0 0 0 8 22 ...
+##  $ S7_International.travel.controls       : int  0 6 27 48 69 90 111 132 153 174 ...
+##  $ S8_Fiscal.measures                     : num  0 0 0 0 0 ...
+##  $ S9_Monetary.measures                   : num  0.75 6 11.25 16.5 21.75 ...
+##  $ S10_Emergency.investment.in.health.care: num  0 0 0 0 0 ...
+##  $ S11_Investment.in.Vaccines             : num  0 0 0 0 0 ...
+##  $ S12_Testing.framework                  : int  0 0 0 0 0 0 0 0 7 14 ...
+##  $ S13_Contact.tracing                    : int  0 0 0 0 0 0 2 3 10 17 ...
+##  $ StringencyIndexForDisplay              : num  7.14 85.7 285.69 485.68 685.67 ...
+##  $ ConfirmedCases                         : int  4 11 14 15 22 26 74 249 1098 3809 ...
+##  $ ConfirmedDeaths                        : int  0 0 0 0 0 1 3 3 7 14 ...</code></pre>
+<pre class="r"><code># 
+# ### We do our prediction based on the data on 20200408
+# df_20200408&lt;-subset(data,select=c(&quot;CountryName&quot;,&quot;Date&quot;,&quot;ConfirmedCases&quot;,&quot;ConfirmedDeaths&quot;))
+# df_20200408&lt;-subset(df_20200408,Date==&quot;20200408&quot;)
+# df_20200408$DeathRate&lt;-round(df_20200408$ConfirmedDeaths/df_20200408$ConfirmedCases,3)
+# str(df_20200408)
+# install.packages(&quot;lubridate&quot;)
+# library(lubridate)
+# df_20200408$Date&lt;- ymd(df_20200408[, 2]) #Converting integer to date formate
+# 
+# ### Try to create some variables showing how many days those countries have closed schools, governments and workplace. TBC.
+# library(dplyr)
+# df_school&lt;-subset(data,select=&quot;CountryName&quot;)
+# df_school$CloseSchool&lt;-ifelse(data$S1_School.closing==2,data$Date,NA)</code></pre>
+</div>
 </div>
 </div>
 <div id="explore-notes-columns" class="section level3">
 <h3>Explore Notes Columns</h3>
 <p>To explore the notes data, we just peaked into one of the columns to see what kind of announcements they are using.</p>
 <pre class="r"><code>names(df_notes)</code></pre>
-<pre><code>##  [1] &quot;S1_Notes&quot;  &quot;S2_Notes&quot;  &quot;S3_Notes&quot;  &quot;S4_Notes&quot;  &quot;S5_Notes&quot; 
-##  [6] &quot;S6_Notes&quot;  &quot;S7_Notes&quot;  &quot;S8_Notes&quot;  &quot;S9_Notes&quot;  &quot;S10_Notes&quot;
-## [11] &quot;S11_Notes&quot; &quot;S12_Notes&quot; &quot;S13_Notes&quot;</code></pre>
+<pre><code>##  [1] &quot;S1_Notes&quot;  &quot;S2_Notes&quot;  &quot;S3_Notes&quot;  &quot;S4_Notes&quot;  &quot;S5_Notes&quot;  &quot;S6_Notes&quot; 
+##  [7] &quot;S7_Notes&quot;  &quot;S8_Notes&quot;  &quot;S9_Notes&quot;  &quot;S10_Notes&quot; &quot;S11_Notes&quot; &quot;S12_Notes&quot;
+## [13] &quot;S13_Notes&quot;</code></pre>
 <pre class="r"><code>str(df_notes)</code></pre>
 <pre><code>## 'data.frame':    2970 obs. of  13 variables:
 ##  $ S1_Notes : Factor w/ 96 levels &quot;&quot;,&quot;\nSource: https://www.reuters.com/article/us-health-coronavirus-moscow-events/russia-bans-entry-to-foreign-nati&quot;| __truncated__,..: 1 1 1 1 1 1 1 1 1 1 ...
@@ -696,8 +902,8 @@ for (country in top30) {
 <h3>Explore Genral Columns</h3>
 <p>To explore the general, we just peaked into one of the columns to see what kind of announcements they are using.</p>
 <pre class="r"><code>names(df_general)</code></pre>
-<pre><code>## [1] &quot;S1_IsGeneral&quot; &quot;S2_IsGeneral&quot; &quot;S3_IsGeneral&quot; &quot;S4_IsGeneral&quot;
-## [5] &quot;S5_IsGeneral&quot; &quot;S6_IsGeneral&quot;</code></pre>
+<pre><code>## [1] &quot;S1_IsGeneral&quot; &quot;S2_IsGeneral&quot; &quot;S3_IsGeneral&quot; &quot;S4_IsGeneral&quot; &quot;S5_IsGeneral&quot;
+## [6] &quot;S6_IsGeneral&quot;</code></pre>
 <pre class="r"><code>str(df_general)</code></pre>
 <pre><code>## 'data.frame':    2970 obs. of  6 variables:
 ##  $ S1_IsGeneral: int  NA NA NA NA NA NA NA NA NA NA ...

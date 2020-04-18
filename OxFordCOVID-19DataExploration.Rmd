@@ -67,9 +67,20 @@ Top 30 is based on the number of Confirmed Cases on 04-08-2020. This can be modi
 data_0408 = subset(data, data$Date == 20200408)
 # order data in descending order based on num cases and deaths
 data_0408 = data_0408[order(-data_0408$ConfirmedCases, -data_0408$ConfirmedDeaths),]
+# data_04 = data_0408[data_0408$ConfirmedCases > 0,]
+# data_04 = data_04[, c('CountryName', 'ConfirmedCases')]
+# str(data_04)
+# top = head(data_04,30)
+# top$CountryName = factor(top$CountryName)
+# str(top)
+# print(top)
+# print(data_04$ConfirmedCases)
+# print(levels(factor(data_0408$CountryName)))
+
 
 # take the levels of first 30 rows of the CountryName column
 top30 = levels(factor(head(data_0408,30)$CountryName))
+
 top30
 ```
 
@@ -105,28 +116,28 @@ df = df_top30
 #### Deal with NAs and NULLs
 For most if not all measures, NA or NULL values were replaced with the most recent non-zero value for that country when possible, else zero
 ```{r ,}
-#
+# need to figure out how to make these take last non-zero value
+df$ConfirmedCases[df$Date == 20200101 & is.na(df$ConfirmedCases)] <- 0
+
+
+
 ```
 
 #### Dealing with General vs Targetted
 Data includes targeted and general measures. Should we be treating them differently?
 ```{r ,}
 #
+
+
 ```
 
+#### Converting Date Format
+```{r ,}
+# turn date column into date format
+df$Date <- as.Date(as.character(df$Date),"%Y%m%d")
+```
 
 ### Flatten Data
-#### List of Dates of Interest
-Retrieving every 7th day since Jan 1.
-```{r ,}
-# turn date column into date format and remove duplicate dates
-df$Date <- as.Date(as.character(df$Date),"%Y%m%d")
-dates = sort(unique(df$Date, incomparables = FALSE))
-
-# extract every 7th date
-dates = dates[seq(1, length(dates), 7)]
-dates
-```
 #### Separate Flattening Columns
 Some columns are informational and do not need to be flattened. Some measures need to be summed to that point. Others can just take the face value?
 ```{r ,}
@@ -134,7 +145,8 @@ info = c("Date", "CountryName", "CountryCode", "ConfirmedCases", "ConfirmedDeath
 measures = names(df)[!(names(df) %in% info)]
 measures
 ```
-#### Flatten Data into new DataFrame
+
+Flatten Data into new DataFrame
 ```{r ,}
 # create empty data frame
 df_flat <- data.frame(Date=as.Date(character()),
@@ -160,83 +172,64 @@ df_flat <- data.frame(Date=as.Date(character()),
                      stringsAsFactors=FALSE) 
 
 str(df_flat)
-#testing adding to dataframe
-df_flat <- rbind(df_flat, data.frame(Date=as.Date("1993-03-01"),
-                                     Day = as.integer(1),
-                                     CountryName="country",
-                                     CountryCode ="cc",
-                                     S1_School.closing = as.integer(1),
-                                     S2_Workplace.closing = as.integer(2),
-                                     S3_Cancel.public.events = as.integer(3),
-                                     S4_Close.public.transport = as.integer(4),
-                                     S5_Public.information.campaigns = as.integer(5),
-                                     S6_Restrictions.on.internal.movement = as.integer(6),
-                                     S7_International.travel.controls = 7.1,
-                                     S8_Fiscal.measures = 8.1,
-                                     S9_Monetary.measures = 9.1,
-                                     S10_Emergency.investment.in.health.care = 10.1,
-                                     S11_Investment.in.Vaccines = 11.1,
-                                     S12_Testing.framework = 12,
-                                     S13_Contact.tracing = 13,
-                                     StringencyIndexForDisplay = 14.1,
-                                     ConfirmedCases = as.integer(15),
-                                     ConfirmedDeaths = as.integer(16)))
-
 ```
 
 
 ```{r ,}
-## FLATTENING FOR US onlu 
+## FLATTENING FOR ONE Country to debug only 
 # for each country in the top 30
-for (country in top30) {
-  # subset of data only for that country
-  df_country = subset(df, CountryName == country)
-  cc = levels(factor(df_country$CountryCode))
-  print(country)
-  if (country == "United States"){
-    x = Position(function(x) x > 100, df_country$ConfirmedCases) - 1
-    df_country_reset = tail(df_country, -x)
-    c_dates = sort(unique(df_country_reset$Date, incomparables = FALSE))
-    c_dates = c_dates[seq(1, length(c_dates), 7)]
-    print(c_dates[1])
-    for (d in seq_along(c_dates)){
-      print(c_dates[d])
-      df_date = subset(df_country_reset, Date <= c_dates[d])
-      cols = colSums(df_date[measures], na.rm = TRUE)
-       
-      df_flat <- rbind(df_flat, data.frame(Date = c_dates[d],
-                      Day = as.integer(c_dates[d]-c_dates[1]),
-                       CountryName = country,
-                       CountryCode = cc,
-                       S1_School.closing = as.integer(cols['S1_School.closing']),
-                       S2_Workplace.closing = as.integer(cols['S2_Workplace.closing']),
-                       S3_Cancel.public.events = as.integer(cols['S3_Cancel.public.events']),
-                       S4_Close.public.transport = as.integer(cols['S4_Close.public.transport']),
-                       S5_Public.information.campaigns = as.integer(cols['S5_Public.information.campaigns']),
-                       S6_Restrictions.on.internal.movement = as.integer(cols['S6_Restrictions.on.internal.movement']),
-                       S7_International.travel.controls = as.integer(cols['S7_International.travel.controls']),
-                       S8_Fiscal.measures = cols['S8_Fiscal.measures'],
-                       S9_Monetary.measures = cols['S9_Monetary.measures'],
-                       S10_Emergency.investment.in.health.care = cols['S10_Emergency.investment.in.health.care'],
-                       S11_Investment.in.Vaccines = cols['S11_Investment.in.Vaccines'],
-                       S12_Testing.framework = as.integer(cols['S12_Testing.framework']),
-                       S13_Contact.tracing = as.integer(cols['S13_Contact.tracing']),
-                       StringencyIndexForDisplay = cols['StringencyIndexForDisplay'],
-                       ConfirmedCases = as.integer(df_date$ConfirmedCases[df_date$Date == c_dates[d]]),
-                       ConfirmedDeaths = as.integer(df_date$ConfirmedDeaths[df_date$Date == c_dates[d]])))
-    }
-    
-  }
-  
-}
-
-str(df_flat)
+# for (country in top30) {
+#   # subset of data only for that country
+#   df_country = subset(df, CountryName == country)
+#   cc = levels(factor(df_country$CountryCode))
+#   print(country)
+#   if (country == "China"){
+#     
+#     #Take care of null values for Confirmed Cases
+#     df_country$ConfirmedCases = na.locf(with(df_country, ifelse(df_country$ConfirmedCases == 'NA', NA_real_, df_country$ConfirmedCases)), fromLast = FALSE)
+#     
+#     x = Position(function(x) x > 100, df_country$ConfirmedCases) - 1
+#     df_country_reset = tail(df_country, -x)
+#     c_dates = sort(unique(df_country_reset$Date, incomparables = FALSE))
+#     c_dates = c_dates[seq(1, length(c_dates), 7)]
+#     for (d in seq_along(c_dates)){
+#       print(c_dates[d])
+#       df_date = subset(df_country_reset, Date <= c_dates[d])
+#       cols = colSums(df_date[measures], na.rm = TRUE)
+#        
+#       df_flat <- rbind(df_flat, data.frame(Date = c_dates[d],
+#                       Day = as.integer(c_dates[d]-c_dates[1]),
+#                        CountryName = country,
+#                        CountryCode = cc,
+#                        S1_School.closing = as.integer(cols['S1_School.closing']),
+#                        S2_Workplace.closing = as.integer(cols['S2_Workplace.closing']),
+#                        S3_Cancel.public.events = as.integer(cols['S3_Cancel.public.events']),
+#                        S4_Close.public.transport = as.integer(cols['S4_Close.public.transport']),
+#                        S5_Public.information.campaigns = as.integer(cols['S5_Public.information.campaigns']),
+#                        S6_Restrictions.on.internal.movement = as.integer(cols['S6_Restrictions.on.internal.movement']),
+#                        S7_International.travel.controls = as.integer(cols['S7_International.travel.controls']),
+#                        S8_Fiscal.measures = cols['S8_Fiscal.measures'],
+#                        S9_Monetary.measures = cols['S9_Monetary.measures'],
+#                        S10_Emergency.investment.in.health.care = cols['S10_Emergency.investment.in.health.care'],
+#                        S11_Investment.in.Vaccines = cols['S11_Investment.in.Vaccines'],
+#                        S12_Testing.framework = as.integer(cols['S12_Testing.framework']),
+#                        S13_Contact.tracing = as.integer(cols['S13_Contact.tracing']),
+#                        StringencyIndexForDisplay = cols['StringencyIndexForDisplay'],
+#                        ConfirmedCases = as.integer(df_date$ConfirmedCases[df_date$Date == c_dates[d]]),
+#                        ConfirmedDeaths = as.integer(df_date$ConfirmedDeaths[df_date$Date == c_dates[d]])))
+#     }
+#   }
+# }
+# 
+# str(df_flat)
 
 ```
 
-###### Finds sum of each column
+###### 
 ```{r ,}
 ## FLATTENING FOR ALL 
+# some countries have an issue here...working on it
+library(zoo)
 # for each country in the top 30
 for (country in top30) {
   # subset of data only for that country
@@ -244,16 +237,18 @@ for (country in top30) {
   cc = levels(factor(df_country$CountryCode))
   print(country)
   
-  x = Position(function(x) x > 100, df_country$ConfirmedCases) - 1
+  df_country$ConfirmedCases = na.locf(with(df_country, ifelse(df_country$ConfirmedCases == 'NA', NA_real_, df_country$ConfirmedCases)), fromLast = FALSE)
+
+  x = Position(function(x) x > 0, df_country$ConfirmedCases)
   df_country_reset = tail(df_country, -x)
   c_dates = sort(unique(df_country_reset$Date, incomparables = FALSE))
   c_dates = c_dates[seq(1, length(c_dates), 7)]
   print(c_dates[1])
   for (d in seq_along(c_dates)){
-    print(c_dates[d])
+    #print(c_dates[d])
     df_date = subset(df_country_reset, Date <= c_dates[d])
     cols = colSums(df_date[measures], na.rm = TRUE)
-    
+
     # add date and country to dataframe
     df_flat <- rbind(df_flat, data.frame(Date = c_dates[d],
                     Day = as.integer(c_dates[d]-c_dates[1]),
@@ -276,7 +271,7 @@ for (country in top30) {
                      ConfirmedCases = as.integer(df_date$ConfirmedCases[df_date$Date == c_dates[d]]),
                      ConfirmedDeaths = as.integer(df_date$ConfirmedDeaths[df_date$Date == c_dates[d]])))
   }
-  
+
 }
 
 str(df_flat)
@@ -284,7 +279,6 @@ str(df_flat)
 ```
 
 ```{r}
-
 ### We do our prediction based on the data on 20200408
 df_20200408<-subset(data,select=c("CountryName","Date","ConfirmedCases","ConfirmedDeaths"))
 df_20200408<-subset(df_20200408,Date=="20200408")
