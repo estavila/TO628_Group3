@@ -31,6 +31,8 @@ https://www.bsg.ox.ac.uk/research/research-projects/oxford-covid-19-government-r
 
 OxCGRT collects publicly available information on 13 indicators of government response (S1-S13). Nine of the indicators (S1-S7, S12 and S13) take policies such as school closures, travel bans, etc. are recorded on an ordinal scale; the remainder (S8-S11) are financial indicators such as fiscal or monetary measures.
 
+This endpoint provides JSON by with country stringency data, confirmed cases and deaths on a day by day basis as collected by our data collection team. The stringency_actual field is the daily calculated data. The stringency field is a convenience field for visualisations which holds previous day data (up to 7 days) if data in unavailable for a given day.
+
 #### Other data in dataset:
 
 * ConfirmedCases
@@ -42,6 +44,11 @@ Oxford has a StringencyIndex that measures how stringent each government has rea
 Interesting analysis of Oxford data:
 https://www.bsg.ox.ac.uk/research/research-projects/oxford-covid-19-government-response-tracker?ref=researchstash
 
+White Paper on Data:
+https://www.bsg.ox.ac.uk/sites/default/files/2020-04/BSG-WP-2020-031-v4.0_0.pdf
+
+
+
 ## Data Exploration
 ### Read File
 Read file in.Noticed it has a lot of "Notes" columns used to supply source of change in variable.
@@ -51,30 +58,7 @@ data = read.csv("OxCGRT_Download_080420_161822_Full.csv")
 names(data)
 ```
 
-### Filter DataFrame
-We removed those columns to facilitate initial data exploration.
 
-```{r ,}
-df = subset( data, select = -c(grep( "Notes" , names( data ) )) )
-df = subset( df, select = -c(grep( "General" , names( df ) )) )
-names(df)
-#str(df)
-#summary(df)
-
-```
-
-```{r ,}
-###
-df$Date<-data.frame(as.Date(as.character(df$Date),"%Y%m%d")) #converting integer data frame to date, then we can calculate date differences (Updated Date (20200408) - Date of closing school, workplace etc.)
-
-
-# the two lines below didn't run for me...did you use any specific libraries?
-
-df_0408<-filter(df,df$Date=="2020-04-08") #using the data on date 20200408
-df_0408<-arrange(df_0408,desc(ConfirmedCases, ConfirmedDeaths))#arranging in a decreasing order of confirmed cases and confirmed deaths
-df_0408_top30<-head(df_0408,30) #If we decide to use all 118 country data, delete this line.
-
-```
 
 #### Get Top 30 Countries
 Top 30 is based on the number of Confirmed Cases on 04-08-2020. This can be modified.
@@ -96,7 +80,11 @@ df_top30 = subset(data, CountryName %in% top30)
 df_top30 = subset(df_top30, df_top30$Date <= 20200408)
 # drop unused levels from all factors
 df_top30[] = lapply(df_top30, function(x) if(is.factor(x)) factor(x) else x)
+```
 
+#### Separate or remove excess columns
+The Notes and General columns do not pertain to our prediction model. We will also only be using the Display Stringency Index as it is more complete.
+```{r ,}
 # find columns with Notes or General in name
 Notes = c(grep( "Notes" , names( df_top30 ) ))
 General = c(grep( "General" , names( df_top30 ) ))
@@ -106,9 +94,85 @@ df_general = subset( df_top30, select = General )
 # remove notes and general columns from main df
 df_top30 = subset( df_top30, select = -c(Notes, General))
 
-names(df_top30)
-#summary(df_top30)
+# remove duplicate stringency index
+df_top30 = subset(df_top30, select = -c(StringencyIndex))
+
+str(df_top30)
+summary(df_top30)
+df = df_top30
 ```
+
+#### Deal with NAs and NULLs
+For most if not all measures, NA or NULL values were replaced with the most recent non-zero value for that country when possible, else zero
+```{r ,}
+#
+```
+
+### Flatten Data
+#### List of Dates  of Interest
+Retrieving every 7th day since Jan 1.
+```{r ,}
+# turn date column into date format and remove duplicate dates
+df$Date <- as.Date(as.character(df$Date),"%Y%m%d")
+dates = sort(unique(df$Date, incomparables = FALSE))
+
+# extract every 7th date
+dates = dates[seq(1, length(dates), 7)]
+
+dates
+```
+#### Separate Flattening Columns
+Some columns are informational and do not need to be flattened. Some measures need to be summed to that point. Others can just take the face value?
+```{r ,}
+info = c("Date", "CountryName", "CountryCode", "ConfirmedCases", "ConfirmedDeaths") #, "StringencyIndexForDisplay", "X")
+measures = names(df)[!(names(df) %in% info)]
+info
+measures
+```
+
+```{r ,}
+# for each country in the top 30
+c = "a"
+for (country in top30) {
+  # for each date in dates list
+  for (date in dates) {
+    # subset of data just up to that date and only for that country
+    df_date = subset(df, CountryName == country & Date == date)
+    
+    if (country == "United States" & c == "a") {
+      #print(df_date$S10_Investment.in.Vaccines)
+      str(df_date)
+      c = "c"
+    }
+  }
+  
+}
+
+
+# sum all previous
+# add to new df
+```
+
+```{r}
+
+### We do our prediction based on the data on 20200408
+df_20200408<-subset(data,select=c("CountryName","Date","ConfirmedCases","ConfirmedDeaths"))
+df_20200408<-subset(df_20200408,Date=="20200408")
+df_20200408$DeathRate<-round(df_20200408$ConfirmedDeaths/df_20200408$ConfirmedCases,3)
+str(df_20200408)
+install.packages("lubridate")
+library(lubridate)
+df_20200408$Date<- ymd(df_20200408[, 2]) #Converting integer to date formate
+
+### Try to create some variables showing how many days those countries have closed schools, governments and workplace. TBC.
+library(dplyr)
+df_school<-subset(data,select="CountryName")
+df_school$CloseSchool<-ifelse(data$S1_School.closing==2,data$Date,NA)
+
+
+```
+
+
 
 ### Explore Notes Columns
 To explore the notes data, we just peaked into one of the columns to see what kind of announcements they are using.
