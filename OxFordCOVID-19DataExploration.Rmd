@@ -171,7 +171,6 @@ df_flat <- data.frame(Date=as.Date(character()),
                      StringencyIndexForDisplay = double(),
                      ConfirmedCases = integer(),
                      ConfirmedDeaths = integer(),
-                     GrowthRate = integer(),
                      stringsAsFactors=FALSE) 
 
 str(df_flat)
@@ -222,14 +221,6 @@ for (country in top) {
     
     # cumulate the measures
     cols = colSums(df_date[measures], na.rm = TRUE)
-    
-    # calculate growth rate
-    if (d==1){
-      g_rate = 0
-    }
-    else{
-      g_rate = as.integer(df_date$ConfirmedCases[df_date$Date == dates[d]] - df_date$ConfirmedCases[df_date$Date == dates[d-1]])
-    }
 
     # add data for specified date and country to dataframe
     df_flat <- rbind(df_flat, data.frame(Date = dates[d],
@@ -251,9 +242,7 @@ for (country in top) {
                      S13_Contact.tracing = as.integer(cols['S13_Contact.tracing']),
                      StringencyIndexForDisplay = cols['StringencyIndexForDisplay'],
                      ConfirmedCases = as.integer(df_date$ConfirmedCases[df_date$Date == dates[d]]),
-                     ConfirmedDeaths = as.integer(df_date$ConfirmedDeaths[df_date$Date == dates[d]]),
-                    GrowthRate = g_rate))
-                    
+                     ConfirmedDeaths = as.integer(df_date$ConfirmedDeaths[df_date$Date == dates[d]])))
   }
 }
 
@@ -262,7 +251,6 @@ str(df_flat)
 ```
 
 ### Linear Regression
-#### Death Rate
 ```{r}
 #Replace some values to unify the units.
 df_flat$S11_Investment.in.Vaccines[df_flat$S11_Investment.in.Vaccines>1000]<-with(df_flat,S11_Investment.in.Vaccines[df_flat$S11_Investment.in.Vaccines>1000]*0.000001)
@@ -286,16 +274,334 @@ residualPlots(df_flat_model)
   
 ```
 
-#### Growth Rate
-```{r}
-str(df_flat)
-# Run Linear Regression model. 
-g_rate_mod<-lm(GrowthRate ~ S1_School.closing +S2_Workplace.closing +S3_Cancel.public.events +S4_Close.public.transport +S5_Public.information.campaigns +S6_Restrictions.on.internal.movement +S7_International.travel.controls +S8_Fiscal.measures +S9_Monetary.measures +S10_Emergency.investment.in.health.care +S11_Investment.in.Vaccines +S12_Testing.framework +S13_Contact.tracing,  data=df_flat)
-summary(g_rate_mod)
-#residualPlots(df_flat_model)
 
+###Linear Regression #2
+
+```{r}
+library(lmtest)
+library(car)
+
+df_flat$CountryCode <- NULL
+
+
+
+for(country in top){
+  df_model_1 <- lm(ConfirmedDeaths ~ S1_School.closing + S2_Workplace.closing + S3_Cancel.public.events
+                       + S4_Close.public.transport + S5_Public.information.campaigns + S6_Restrictions.on.internal.movement
+                       + S7_International.travel.controls + S8_Fiscal.measures + S9_Monetary.measures
+                       + S10_Emergency.investment.in.health.care + S11_Investment.in.Vaccines + S12_Testing.framework 
+                       + S13_Contact.tracing + StringencyIndexForDisplay, data = subset(df_flat, CountryName == country))
   
+  summary(df_model_1)
+  
+  df_model_2 <- lm(ConfirmedCases ~ S1_School.closing + S2_Workplace.closing + S3_Cancel.public.events
+                       + S4_Close.public.transport + S5_Public.information.campaigns + S6_Restrictions.on.internal.movement
+                       + S7_International.travel.controls + S8_Fiscal.measures + S9_Monetary.measures
+                       + S10_Emergency.investment.in.health.care + S11_Investment.in.Vaccines + S12_Testing.framework 
+                       + S13_Contact.tracing + StringencyIndexForDisplay, data = subset(df_flat, CountryName == ))
+  
+  summary(df_model_2)
+}
+
+
+
+
 ```
+Austria
+
+```{r}
+#Austria
+df_model_Austria_1 <- lm(ConfirmedDeaths ~ S1_School.closing + S2_Workplace.closing + S3_Cancel.public.events
+                       + S4_Close.public.transport + S5_Public.information.campaigns + S6_Restrictions.on.internal.movement
+                       + S7_International.travel.controls + S8_Fiscal.measures + S9_Monetary.measures
+                       + S10_Emergency.investment.in.health.care + S11_Investment.in.Vaccines + S12_Testing.framework 
+                       + S13_Contact.tracing + StringencyIndexForDisplay, data = subset(df_flat, CountryName == "Austria"))
+  
+summary(df_model_Austria_1)
+
+df_model_Austria_2 <- lm(ConfirmedCases ~ S1_School.closing + S2_Workplace.closing + S3_Cancel.public.events
+                       + S4_Close.public.transport + S5_Public.information.campaigns + S6_Restrictions.on.internal.movement
+                       + S7_International.travel.controls + S8_Fiscal.measures + S9_Monetary.measures
+                       + S10_Emergency.investment.in.health.care + S11_Investment.in.Vaccines + S12_Testing.framework 
+                       + S13_Contact.tracing + StringencyIndexForDisplay, data = subset(df_flat, CountryName == "Austria"))
+  
+summary(df_model_Austria_2)
+
+```
+
+
+
+
+Belgium
+
+```{r}
+#Belgium
+library(lmtest)
+library(car)
+
+df_flat$CountryCode <- NULL
+df_model_Belgium_1 <- lm(ConfirmedDeaths ~ S1_School.closing + S2_Workplace.closing + S3_Cancel.public.events
+                       + S4_Close.public.transport + S5_Public.information.campaigns + S6_Restrictions.on.internal.movement
+                       + S7_International.travel.controls + S8_Fiscal.measures + S9_Monetary.measures
+                       + S10_Emergency.investment.in.health.care + S11_Investment.in.Vaccines + S12_Testing.framework 
+                       + S13_Contact.tracing + StringencyIndexForDisplay, data = subset(df_flat, CountryName == "Belgium"))
+  
+summary(df_model_Belgium_1)
+
+df_model_Belgium_2 <- lm(ConfirmedCases ~ S1_School.closing + S2_Workplace.closing + S3_Cancel.public.events
+                       + S4_Close.public.transport + S5_Public.information.campaigns + S6_Restrictions.on.internal.movement
+                       + S7_International.travel.controls + S8_Fiscal.measures + S9_Monetary.measures
+                       + S10_Emergency.investment.in.health.care + S11_Investment.in.Vaccines + S12_Testing.framework 
+                       + S13_Contact.tracing + StringencyIndexForDisplay, data = subset(df_flat, CountryName == "Belgium"))
+  
+summary(df_model_Belgium_2)
+
+```
+
+
+Brazil
+```{r}
+#Brazil
+library(lmtest)
+library(car)
+
+df_model_Brazil_1 <- lm(ConfirmedDeaths ~ S1_School.closing + S2_Workplace.closing + S3_Cancel.public.events
+                       + S4_Close.public.transport + S5_Public.information.campaigns + S6_Restrictions.on.internal.movement
+                       + S7_International.travel.controls + S8_Fiscal.measures + S9_Monetary.measures
+                       + S10_Emergency.investment.in.health.care + S11_Investment.in.Vaccines + S12_Testing.framework 
+                       + S13_Contact.tracing + StringencyIndexForDisplay, data = subset(df_flat, CountryName == "Brazil"))
+  
+summary(df_model_Brazil_1)
+
+df_model_Brazil_2 <- lm(ConfirmedCases ~ S1_School.closing + S2_Workplace.closing + S3_Cancel.public.events
+                       + S4_Close.public.transport + S5_Public.information.campaigns + S6_Restrictions.on.internal.movement
+                       + S7_International.travel.controls + S8_Fiscal.measures + S9_Monetary.measures
+                       + S10_Emergency.investment.in.health.care + S11_Investment.in.Vaccines + S12_Testing.framework 
+                       + S13_Contact.tracing + StringencyIndexForDisplay, data = subset(df_flat, CountryName == "Brazil"))
+  
+summary(df_model_Brazil_2)
+```
+
+
+Canada
+```{r}
+df_model_Canada_1 <- lm(ConfirmedDeaths ~ S1_School.closing + S2_Workplace.closing + S3_Cancel.public.events
+                       + S4_Close.public.transport + S5_Public.information.campaigns + S6_Restrictions.on.internal.movement
+                       + S7_International.travel.controls + S8_Fiscal.measures + S9_Monetary.measures
+                       + S10_Emergency.investment.in.health.care + S11_Investment.in.Vaccines + S12_Testing.framework 
+                       + S13_Contact.tracing + StringencyIndexForDisplay, data = subset(df_flat, CountryName == "Canada"))
+  
+summary(df_model_Brazil_1)
+
+df_model_Canada_2 <- lm(ConfirmedCases ~ S1_School.closing + S2_Workplace.closing + S3_Cancel.public.events
+                       + S4_Close.public.transport + S5_Public.information.campaigns + S6_Restrictions.on.internal.movement
+                       + S7_International.travel.controls + S8_Fiscal.measures + S9_Monetary.measures
+                       + S10_Emergency.investment.in.health.care + S11_Investment.in.Vaccines + S12_Testing.framework 
+                       + S13_Contact.tracing + StringencyIndexForDisplay, data = subset(df_flat, CountryName == "Canada"))
+  
+summary(df_model_Canada_2)
+```
+
+Chile
+
+```{r}
+df_model_Chile_1 <- lm(ConfirmedDeaths ~ S1_School.closing + S2_Workplace.closing + S3_Cancel.public.events
+                       + S4_Close.public.transport + S5_Public.information.campaigns + S6_Restrictions.on.internal.movement
+                       + S7_International.travel.controls + S8_Fiscal.measures + S9_Monetary.measures
+                       + S10_Emergency.investment.in.health.care + S11_Investment.in.Vaccines + S12_Testing.framework 
+                       + S13_Contact.tracing + StringencyIndexForDisplay, data = subset(df_flat, CountryName == "Chile"))
+  
+summary(df_model_Chile_1)
+
+df_model_Chile_2 <- lm(ConfirmedCases ~ S1_School.closing + S2_Workplace.closing + S3_Cancel.public.events
+                       + S4_Close.public.transport + S5_Public.information.campaigns + S6_Restrictions.on.internal.movement
+                       + S7_International.travel.controls + S8_Fiscal.measures + S9_Monetary.measures
+                       + S10_Emergency.investment.in.health.care + S11_Investment.in.Vaccines + S12_Testing.framework 
+                       + S13_Contact.tracing + StringencyIndexForDisplay, data = subset(df_flat, CountryName == "Chile"))
+  
+summary(df_model_Chile_2)
+```
+
+
+China
+
+```{r}
+df_model_China_1 <- lm(ConfirmedDeaths ~ S1_School.closing + S2_Workplace.closing + S3_Cancel.public.events
+                       + S4_Close.public.transport + S5_Public.information.campaigns + S6_Restrictions.on.internal.movement
+                       + S7_International.travel.controls + S8_Fiscal.measures + S9_Monetary.measures
+                       + S10_Emergency.investment.in.health.care + S11_Investment.in.Vaccines + S12_Testing.framework 
+                       + S13_Contact.tracing + StringencyIndexForDisplay, data = subset(df_flat, CountryName == "China"))
+  
+summary(df_model_China_1)
+
+df_model_China_2 <- lm(ConfirmedCases ~ S1_School.closing + S2_Workplace.closing + S3_Cancel.public.events
+                       + S4_Close.public.transport + S5_Public.information.campaigns + S6_Restrictions.on.internal.movement
+                       + S7_International.travel.controls + S8_Fiscal.measures + S9_Monetary.measures
+                       + S10_Emergency.investment.in.health.care + S11_Investment.in.Vaccines + S12_Testing.framework 
+                       + S13_Contact.tracing + StringencyIndexForDisplay, data = subset(df_flat, CountryName == "China"))
+  
+summary(df_model_China_2)
+
+```
+
+
+Ecuador
+
+```{r}
+df_model_Ecuador_1 <- lm(ConfirmedDeaths ~ S1_School.closing + S2_Workplace.closing + S3_Cancel.public.events
+                       + S4_Close.public.transport + S5_Public.information.campaigns + S6_Restrictions.on.internal.movement
+                       + S7_International.travel.controls + S8_Fiscal.measures + S9_Monetary.measures
+                       + S10_Emergency.investment.in.health.care + S11_Investment.in.Vaccines + S12_Testing.framework 
+                       + S13_Contact.tracing + StringencyIndexForDisplay, data = subset(df_flat, CountryName == "Ecuador"))
+  
+summary(df_model_Ecuador_1)
+
+df_model_Ecuador_2 <- lm(ConfirmedCases ~ S1_School.closing + S2_Workplace.closing + S3_Cancel.public.events
+                       + S4_Close.public.transport + S5_Public.information.campaigns + S6_Restrictions.on.internal.movement
+                       + S7_International.travel.controls + S8_Fiscal.measures + S9_Monetary.measures
+                       + S10_Emergency.investment.in.health.care + S11_Investment.in.Vaccines + S12_Testing.framework 
+                       + S13_Contact.tracing + StringencyIndexForDisplay, data = subset(df_flat, CountryName == "Ecuador"))
+  
+summary(df_model_Ecuador_2)
+```
+
+
+France
+```{r}
+df_model_France_1 <- lm(ConfirmedDeaths ~ S1_School.closing + S2_Workplace.closing + S3_Cancel.public.events
+                       + S4_Close.public.transport + S5_Public.information.campaigns + S6_Restrictions.on.internal.movement
+                       + S7_International.travel.controls + S8_Fiscal.measures + S9_Monetary.measures
+                       + S10_Emergency.investment.in.health.care + S11_Investment.in.Vaccines + S12_Testing.framework 
+                       + S13_Contact.tracing + StringencyIndexForDisplay, data = subset(df_flat, CountryName == "France"))
+  
+summary(df_model_France_1)
+
+df_model_France_2 <- lm(ConfirmedCases ~ S1_School.closing + S2_Workplace.closing + S3_Cancel.public.events
+                       + S4_Close.public.transport + S5_Public.information.campaigns + S6_Restrictions.on.internal.movement
+                       + S7_International.travel.controls + S8_Fiscal.measures + S9_Monetary.measures
+                       + S10_Emergency.investment.in.health.care + S11_Investment.in.Vaccines + S12_Testing.framework 
+                       + S13_Contact.tracing + StringencyIndexForDisplay, data = subset(df_flat, CountryName == "France"))
+  
+summary(df_model_France_2)
+```
+
+
+Germany
+```{r}
+df_model_Germany_1 <- lm(ConfirmedDeaths ~ S1_School.closing + S2_Workplace.closing + S3_Cancel.public.events
+                       + S4_Close.public.transport + S5_Public.information.campaigns + S6_Restrictions.on.internal.movement
+                       + S7_International.travel.controls + S8_Fiscal.measures + S9_Monetary.measures
+                       + S10_Emergency.investment.in.health.care + S11_Investment.in.Vaccines + S12_Testing.framework 
+                       + S13_Contact.tracing + StringencyIndexForDisplay, data = subset(df_flat, CountryName == "Germany"))
+  
+summary(df_model_Germany_1)
+
+df_model_Germany_2 <- lm(ConfirmedCases ~ S1_School.closing + S2_Workplace.closing + S3_Cancel.public.events
+                       + S4_Close.public.transport + S5_Public.information.campaigns + S6_Restrictions.on.internal.movement
+                       + S7_International.travel.controls + S8_Fiscal.measures + S9_Monetary.measures
+                       + S10_Emergency.investment.in.health.care + S11_Investment.in.Vaccines + S12_Testing.framework 
+                       + S13_Contact.tracing + StringencyIndexForDisplay, data = subset(df_flat, CountryName == "Germany"))
+  
+summary(df_model_Germany_2)
+```
+
+India
+```{r}
+df_model_India_1 <- lm(ConfirmedDeaths ~ S1_School.closing + S2_Workplace.closing + S3_Cancel.public.events
+                       + S4_Close.public.transport + S5_Public.information.campaigns + S6_Restrictions.on.internal.movement
+                       + S7_International.travel.controls + S8_Fiscal.measures + S9_Monetary.measures
+                       + S10_Emergency.investment.in.health.care + S11_Investment.in.Vaccines + S12_Testing.framework 
+                       + S13_Contact.tracing + StringencyIndexForDisplay, data = subset(df_flat, CountryName == "India"))
+  
+summary(df_model_India_1)
+
+df_model_India_2 <- lm(ConfirmedCases ~ S1_School.closing + S2_Workplace.closing + S3_Cancel.public.events
+                       + S4_Close.public.transport + S5_Public.information.campaigns + S6_Restrictions.on.internal.movement
+                       + S7_International.travel.controls + S8_Fiscal.measures + S9_Monetary.measures
+                       + S10_Emergency.investment.in.health.care + S11_Investment.in.Vaccines + S12_Testing.framework 
+                       + S13_Contact.tracing + StringencyIndexForDisplay, data = subset(df_flat, CountryName == "India"))
+  
+summary(df_model_India_2)
+```
+
+
+Iran
+```{r}
+df_model_Iran_1 <- lm(ConfirmedDeaths ~ S1_School.closing + S2_Workplace.closing + S3_Cancel.public.events
+                       + S4_Close.public.transport + S5_Public.information.campaigns + S6_Restrictions.on.internal.movement
+                       + S7_International.travel.controls + S8_Fiscal.measures + S9_Monetary.measures
+                       + S10_Emergency.investment.in.health.care + S11_Investment.in.Vaccines + S12_Testing.framework 
+                       + S13_Contact.tracing + StringencyIndexForDisplay, data = subset(df_flat, CountryName == "Iran"))
+  
+summary(df_model_Iran_1)
+
+df_model_Iran_2 <- lm(ConfirmedCases ~ S1_School.closing + S2_Workplace.closing + S3_Cancel.public.events
+                       + S4_Close.public.transport + S5_Public.information.campaigns + S6_Restrictions.on.internal.movement
+                       + S7_International.travel.controls + S8_Fiscal.measures + S9_Monetary.measures
+                       + S10_Emergency.investment.in.health.care + S11_Investment.in.Vaccines + S12_Testing.framework 
+                       + S13_Contact.tracing + StringencyIndexForDisplay, data = subset(df_flat, CountryName == "Iran"))
+  
+summary(df_model_Iran_2)
+```
+
+Ireland
+```{r}
+df_model_Ireland_1 <- lm(ConfirmedDeaths ~ S1_School.closing + S2_Workplace.closing + S3_Cancel.public.events
+                       + S4_Close.public.transport + S5_Public.information.campaigns + S6_Restrictions.on.internal.movement
+                       + S7_International.travel.controls + S8_Fiscal.measures + S9_Monetary.measures
+                       + S10_Emergency.investment.in.health.care + S11_Investment.in.Vaccines + S12_Testing.framework 
+                       + S13_Contact.tracing + StringencyIndexForDisplay, data = subset(df_flat, CountryName == "Ireland"))
+  
+summary(df_model_Ireland_1)
+
+df_model_Ireland_2 <- lm(ConfirmedCases ~ S1_School.closing + S2_Workplace.closing + S3_Cancel.public.events
+                       + S4_Close.public.transport + S5_Public.information.campaigns + S6_Restrictions.on.internal.movement
+                       + S7_International.travel.controls + S8_Fiscal.measures + S9_Monetary.measures
+                       + S10_Emergency.investment.in.health.care + S11_Investment.in.Vaccines + S12_Testing.framework 
+                       + S13_Contact.tracing + StringencyIndexForDisplay, data = subset(df_flat, CountryName == "Ireland"))
+  
+summary(df_model_Ireland_2)
+```
+
+
+Israel
+```{r}
+df_model_Israel_1 <- lm(ConfirmedDeaths ~ S1_School.closing + S2_Workplace.closing + S3_Cancel.public.events
+                       + S4_Close.public.transport + S5_Public.information.campaigns + S6_Restrictions.on.internal.movement
+                       + S7_International.travel.controls + S8_Fiscal.measures + S9_Monetary.measures
+                       + S10_Emergency.investment.in.health.care + S11_Investment.in.Vaccines + S12_Testing.framework 
+                       + S13_Contact.tracing + StringencyIndexForDisplay, data = subset(df_flat, CountryName == "Israel"))
+  
+summary(df_model_Israel_1)
+
+df_model_Israel_2 <- lm(ConfirmedCases ~ S1_School.closing + S2_Workplace.closing + S3_Cancel.public.events
+                       + S4_Close.public.transport + S5_Public.information.campaigns + S6_Restrictions.on.internal.movement
+                       + S7_International.travel.controls + S8_Fiscal.measures + S9_Monetary.measures
+                       + S10_Emergency.investment.in.health.care + S11_Investment.in.Vaccines + S12_Testing.framework 
+                       + S13_Contact.tracing + StringencyIndexForDisplay, data = subset(df_flat, CountryName == "Israel"))
+  
+summary(df_model_Israel_2)
+```
+
+Italy
+```{r}
+df_model_Italy_1 <- lm(ConfirmedDeaths ~ S1_School.closing + S2_Workplace.closing + S3_Cancel.public.events
+                       + S4_Close.public.transport + S5_Public.information.campaigns + S6_Restrictions.on.internal.movement
+                       + S7_International.travel.controls + S8_Fiscal.measures + S9_Monetary.measures
+                       + S10_Emergency.investment.in.health.care + S11_Investment.in.Vaccines + S12_Testing.framework 
+                       + S13_Contact.tracing + StringencyIndexForDisplay, data = subset(df_flat, CountryName == "Italy"))
+  
+summary(df_model_Italy_1)
+
+df_model_Italy_2 <- lm(ConfirmedCases ~ S1_School.closing + S2_Workplace.closing + S3_Cancel.public.events
+                       + S4_Close.public.transport + S5_Public.information.campaigns + S6_Restrictions.on.internal.movement
+                       + S7_International.travel.controls + S8_Fiscal.measures + S9_Monetary.measures
+                       + S10_Emergency.investment.in.health.care + S11_Investment.in.Vaccines + S12_Testing.framework 
+                       + S13_Contact.tracing + StringencyIndexForDisplay, data = subset(df_flat, CountryName == "Italy"))
+  
+summary(df_model_Italy_2)
+```
+
 
 ### Explore Notes Columns
 To explore the notes data, we just peaked into one of the columns to see what kind of announcements they are using.
