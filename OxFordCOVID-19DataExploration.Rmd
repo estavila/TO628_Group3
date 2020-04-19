@@ -283,6 +283,33 @@ library(car)
 
 df_flat$CountryCode <- NULL
 
+
+
+for(country in top){
+  df_model_1 <- lm(ConfirmedDeaths ~ S1_School.closing + S2_Workplace.closing + S3_Cancel.public.events
+                       + S4_Close.public.transport + S5_Public.information.campaigns + S6_Restrictions.on.internal.movement
+                       + S7_International.travel.controls + S8_Fiscal.measures + S9_Monetary.measures
+                       + S10_Emergency.investment.in.health.care + S11_Investment.in.Vaccines + S12_Testing.framework 
+                       + S13_Contact.tracing + StringencyIndexForDisplay, data = subset(df_flat, CountryName == country))
+  
+  summary(df_model_1)
+  
+  df_model_2 <- lm(ConfirmedCases ~ S1_School.closing + S2_Workplace.closing + S3_Cancel.public.events
+                       + S4_Close.public.transport + S5_Public.information.campaigns + S6_Restrictions.on.internal.movement
+                       + S7_International.travel.controls + S8_Fiscal.measures + S9_Monetary.measures
+                       + S10_Emergency.investment.in.health.care + S11_Investment.in.Vaccines + S12_Testing.framework 
+                       + S13_Contact.tracing + StringencyIndexForDisplay, data = subset(df_flat, CountryName == country))
+  
+  summary(df_model_2)
+}
+
+
+
+
+```
+Austria
+
+```{r}
 #Austria
 df_model_Austria_1 <- lm(ConfirmedDeaths ~ S1_School.closing + S2_Workplace.closing + S3_Cancel.public.events
                        + S4_Close.public.transport + S5_Public.information.campaigns + S6_Restrictions.on.internal.movement
@@ -300,9 +327,11 @@ df_model_Austria_2 <- lm(ConfirmedCases ~ S1_School.closing + S2_Workplace.closi
   
 summary(df_model_Austria_2)
 
-
-
 ```
+
+
+
+
 Belgium
 
 ```{r}
