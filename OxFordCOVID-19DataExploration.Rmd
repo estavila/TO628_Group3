@@ -278,13 +278,23 @@ str(df_flat)
 
 ```
 
-
+### Linear Regression
 ```{r}
+#Replace some values to unify the units.
+df_flat$S11_Investment.in.Vaccines[df_flat$S11_Investment.in.Vaccines>1000]<-with(df_flat,S11_Investment.in.Vaccines[df_flat$S11_Investment.in.Vaccines>1000]*0.000001)
+df_flat$S11_Investment.in.Vaccines<-round(df_flat$S11_Investment.in.Vaccines,1)
+
+
+df_flat$S10_Emergency.investment.in.health.care[df_flat$S10_Emergency.investment.in.health.care>100000]<-with(df_flat,S10_Emergency.investment.in.health.care[df_flat$S10_Emergency.investment.in.health.care>100000]*0.000001)
+df_flat$S10_Emergency.investment.in.health.care<-round(df_flat$S10_Emergency.investment.in.health.care,1)
+
+
+# Creating a column named 'Death Rate' as the dependent variable.
 df_flat$DeathRate<-round(df_flat$ConfirmedDeaths/df_flat$ConfirmedCases,3)
 library(lmtest)
 library(car)
 
-# Run Linear Regression excluding outliers (Iran). The output shows that 3 variables are statistically significant to Death Rate and the p-values are closing to '0'. Also, this could improve the Adjusted R-squared from 0.1615 to0.4889.
+# Run Linear Regression excluding outliers (Iran). The output shows that 3 variables (closing workplace, closing public transport, and public information campaigns) are statistically significant to Death Rate and the p-values are closing to '0'. Also, this could improve the Adjusted R-squared from 0.1615 to0.4889.
 df_flat_2<-df_flat[!(df_flat$CountryName=="Iran"),]
 df_flat_model_2<-lm(DeathRate ~ S1_School.closing+S2_Workplace.closing+S3_Cancel.public.events+S4_Close.public.transport+S5_Public.information.campaigns+S6_Restrictions.on.internal.movement+S7_International.travel.controls, data=df_flat_2 )
 summary(df_flat_model_2)
