@@ -93,7 +93,7 @@ df = df_top
 ```
 
 #### Dealing with General vs Targetted
-Data includes targeted and general measures. When the general column is 1 it means the data was general (for teh whole country), when the general column is 0 it means the data was targetted to a specific geographical locaiton. We are only interested in looking at data generally applied to the whole country.
+Data includes targeted and general measures. When the general column is 1 it means the measure was general (for the whole country), when the general column is 0 it means the measure was targetted to a specific geographical locaiton. We are only interested in looking at data generally applied to the whole country.
 ```{r ,}
 # find columns with General in name
 General = c(grep( "General" , names( df) ))
@@ -195,7 +195,7 @@ for (country in top) {
   df_country = subset(df, CountryName == country)
   # get the country code for that country
   cc = levels(factor(df_country$CountryCode))
-  
+
   # fill NA values with last non-NA value for that country
   df_country$ConfirmedCases = na.locf(with(df_country, ifelse(df_country$ConfirmedCases == 'NA', NA_real_, df_country$ConfirmedCases)), fromLast = FALSE)
   df_country$ConfirmedDeaths = na.locf(with(df_country, ifelse(df_country$ConfirmedDeaths == 'NA', NA_real_, df_country$ConfirmedDeaths)), fromLast = FALSE)
@@ -210,7 +210,7 @@ for (country in top) {
   df_country_reset = tail(df_country, -x)
   
   # find dates to extract data from based on interval chosen
-  dates = sort(df_country_reset$Date, incomparables = FALSE)
+  dates = sort(df_country_reset$Date)
   dates = dates[seq(1, length(dates), interval)]
   
   # for every date of interest
