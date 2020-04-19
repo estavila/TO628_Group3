@@ -305,7 +305,7 @@ str(df_notes)
 levels(df_notes$S1_Notes)[1:5]
 ```
 
-### Explore Genral Columns
+### Explore General Columns
 To explore the general, we just peaked into one of the columns to see what kind of announcements they are using.
 ```{r ,}
 names(df_general)
