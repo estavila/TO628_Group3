@@ -251,8 +251,9 @@ for (country in top) {
                      S13_Contact.tracing = as.integer(cols['S13_Contact.tracing']),
                      StringencyIndexForDisplay = cols['StringencyIndexForDisplay'],
                      ConfirmedCases = as.integer(df_date$ConfirmedCases[df_date$Date == dates[d]]),
-                     ConfirmedDeaths = as.integer(df_date$ConfirmedDeaths[df_date$Date == dates[d]])))
-                    GrowthRate = g_rate
+                     ConfirmedDeaths = as.integer(df_date$ConfirmedDeaths[df_date$Date == dates[d]]),
+                    GrowthRate = g_rate))
+                    
   }
 }
 
@@ -287,8 +288,9 @@ residualPlots(df_flat_model)
 
 #### Growth Rate
 ```{r}
+str(df_flat)
 # Run Linear Regression model. 
-g_rate_mod<-lm(GrowthRate ~ S1_School.closing+S2_Workplace.closing+S3_Cancel.public.events+S4_Close.public.transport+S5_Public.information.campaigns+S6_Restrictions.on.internal.movement+S7_International.travel.controls+S8_Fiscal.measures+S9_Monetary.measures+S10_Emergency.investment.in.health.care+S11_Investment.in.Vaccines+S12_Testing.framework+S13_Contact.tracing,  data=df_flat)
+g_rate_mod<-lm(GrowthRate ~ S1_School.closing +S2_Workplace.closing +S3_Cancel.public.events +S4_Close.public.transport +S5_Public.information.campaigns +S6_Restrictions.on.internal.movement +S7_International.travel.controls +S8_Fiscal.measures +S9_Monetary.measures +S10_Emergency.investment.in.health.care +S11_Investment.in.Vaccines +S12_Testing.framework +S13_Contact.tracing,  data=df_flat)
 summary(g_rate_mod)
 #residualPlots(df_flat_model)
 
