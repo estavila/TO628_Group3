@@ -51,128 +51,251 @@ https://www.bsg.ox.ac.uk/sites/default/files/2020-04/BSG-WP-2020-031-v4.0_0.pdf
 
 ## Data Exploration
 ### Read File
-Read file in.Noticed it has a lot of "Notes" columns used to supply source of change in variable.
+Read file in. Noticed it has a lot of "Notes" columns used to supply source of change in variable. The "General" columns indicate whether measure is geographically targeted or general.
 
 ```{r ,}
-data = read.csv("OxCGRT_Download_080420_161822_Full.csv")
+# read the csv into a dataframe
+data = read.csv("OxCGRT_Download_190420_130939_Full.csv")
+
+# see columns in data
 names(data)
 ```
 
 
 
-#### Get Top 30 Countries
-Top 30 is based on the number of Confirmed Cases on 04-08-2020. This can be modified.
+#### Get Top Countries
+Top number of countries is based on the number of Confirmed Cases on 04-08-2020. This can be modified if data is updated.
 ```{r ,}
-# look at the rows with the date 2020-04-08
-data_0408 = subset(data, data$Date == 20200408)
-# order data in descending order based on num cases and deaths
-data_0408 = data_0408[order(-data_0408$ConfirmedCases, -data_0408$ConfirmedDeaths),]
+# number countries interested in
+num_c = 30
+# date evaluated
+e_date = 20200419
 
-# take the levels of first 30 rows of the CountryName column
-top30 = levels(factor(head(data_0408,30)$CountryName))
-top30
+# look at the rows with the evaluation date
+data_eval = subset(data, data$Date == e_date)
+# order data in descending order based on num cases and deaths
+data_eval = data_eval[order(-data_eval$ConfirmedCases, -data_eval$ConfirmedDeaths),]
+# take the levels of first num_c rows of the CountryName column
+top = levels(factor(head(data_eval,num_c)$CountryName))
+
+top
 ```
 
-#### Filter data to only include Top 30 Countries
+#### Filter data to only include Top Countries
 ```{r ,}
-# take the subset of data related to top 30 countries
-df_top30 = subset(data, CountryName %in% top30)
-df_top30 = subset(df_top30, df_top30$Date <= 20200408)
+# take the subset of data related to top countries
+df_top = subset(data, CountryName %in% top)
+df_top = subset(df_top, df_top$Date <= e_date)
+
 # drop unused levels from all factors
-df_top30[] = lapply(df_top30, function(x) if(is.factor(x)) factor(x) else x)
+df_top[] = lapply(df_top, function(x) if(is.factor(x)) factor(x) else x)
+df = df_top
+```
+
+#### Dealing with General vs Targetted
+Data includes targeted and general measures. When the general column is 1 it means the measure was general (for the whole country), when the general column is 0 it means the measure was targetted to a specific geographical locaiton. We are only interested in looking at data generally applied to the whole country.
+```{r ,}
+# find columns with General in name
+General = c(grep( "General" , names( df) ))
+
+# multiple isGeneral column to measure column and only look at general data
+for (column in General){
+  df[,column-1] = df[,column] * df[,column-1]
+}
 ```
 
 #### Separate or remove excess columns
 The Notes and General columns do not pertain to our prediction model. We will also only be using the Display Stringency Index as it is more complete.
 ```{r ,}
-# find columns with Notes or General in name
-Notes = c(grep( "Notes" , names( df_top30 ) ))
-General = c(grep( "General" , names( df_top30 ) ))
+# find columns with Notes in name
+Notes = c(grep( "Notes" , names( df) ))
 # save notes and general as separate df's
-df_notes = subset(df_top30, select = Notes )
-df_general = subset( df_top30, select = General )
+df_notes = subset(df, select = Notes )
+df_general = subset( df, select = General )
 # remove notes and general columns from main df
-df_top30 = subset( df_top30, select = -c(Notes, General))
+df = subset( df, select = -c(Notes, General))
 
-# remove duplicate stringency index
-df_top30 = subset(df_top30, select = -c(StringencyIndex))
+# remove duplicate stringency index and X column
+df = subset(df, select = -c(StringencyIndex, X))
 
-str(df_top30)
-summary(df_top30)
-df = df_top30
+str(df)
+summary(df)
+
 ```
 
 #### Deal with NAs and NULLs
-For most if not all measures, NA or NULL values were replaced with the most recent non-zero value for that country when possible, else zero
+Since values are dependent per country, there was little general NA cleaning we could do. More cleaning was done per country.
 ```{r ,}
-#
+# make all January 1st values zero if NA
+df[df$Date == 20200101 & is.na(df)] <- 0
+
+```
+
+
+#### Convert Date Column to Date Format
+Date column is in integer format, we converted it to date format to be able to find differences between dates.
+```{r ,}
+# turn date column into date format
+df$Date <- as.Date(as.character(df$Date),"%Y%m%d")
 ```
 
 ### Flatten Data
-#### List of Dates  of Interest
-Retrieving every 7th day since Jan 1.
+#### Separate Columns
+Some measures need to be summed to that point (measures). Others can just be taken at the face value rather than cumulative (info).
 ```{r ,}
-# turn date column into date format and remove duplicate dates
-df$Date <- as.Date(as.character(df$Date),"%Y%m%d")
-dates = sort(unique(df$Date, incomparables = FALSE))
-
-# extract every 7th date
-dates = dates[seq(1, length(dates), 7)]
-
-dates
-```
-#### Separate Flattening Columns
-Some columns are informational and do not need to be flattened. Some measures need to be summed to that point. Others can just take the face value?
-```{r ,}
-info = c("Date", "CountryName", "CountryCode", "ConfirmedCases", "ConfirmedDeaths") #, "StringencyIndexForDisplay", "X")
+info = c("Date", "CountryName", "CountryCode", "ConfirmedCases", "ConfirmedDeaths") #, "StringencyIndexForDisplay")
 measures = names(df)[!(names(df) %in% info)]
-info
-measures
+#measures
 ```
 
+#### Create Empty Dataframe to input new information
 ```{r ,}
-# for each country in the top 30
-c = "a"
-for (country in top30) {
-  # for each date in dates list
-  for (date in dates) {
-    # subset of data just up to that date and only for that country
-    df_date = subset(df, CountryName == country & Date == date)
-    
-    if (country == "United States" & c == "a") {
-      #print(df_date$S10_Investment.in.Vaccines)
-      str(df_date)
-      c = "c"
-    }
+# create empty data frame
+df_flat <- data.frame(Date=as.Date(character()),
+                      Day = integer(),
+                     CountryName=character(), 
+                     CountryCode=character(),
+                     S1_School.closing = integer(),
+                     S2_Workplace.closing = integer(),
+                     S3_Cancel.public.events = integer(),
+                     S4_Close.public.transport = integer(),
+                     S5_Public.information.campaigns = integer(),
+                     S6_Restrictions.on.internal.movement = integer(),
+                     S7_International.travel.controls = integer(),
+                     S8_Fiscal.measures = double(),
+                     S9_Monetary.measures = double(),
+                     S10_Emergency.investment.in.health.care = double(),
+                     S11_Investment.in.Vaccines = double(),
+                     S12_Testing.framework = integer(),
+                     S13_Contact.tracing = integer(),
+                     StringencyIndexForDisplay = double(),
+                     ConfirmedCases = integer(),
+                     ConfirmedDeaths = integer(),
+                     GrowthRate = integer(),
+                     stringsAsFactors=FALSE) 
+
+str(df_flat)
+```
+
+
+#### Flatten Data
+```{r ,}
+# day zero limit
+limit = 100
+
+# interval between dates captured
+interval = 3
+
+
+# library needed to back fill NA values
+library(zoo)
+
+# for each country in the top list
+for (country in top) {
+  # subset of data only for that country
+  df_country = subset(df, CountryName == country)
+  # get the country code for that country
+  cc = levels(factor(df_country$CountryCode))
+
+  # fill NA values with last non-NA value for that country
+  df_country$ConfirmedCases = na.locf(with(df_country, ifelse(df_country$ConfirmedCases == 'NA', NA_real_, df_country$ConfirmedCases)), fromLast = FALSE)
+  df_country$ConfirmedDeaths = na.locf(with(df_country, ifelse(df_country$ConfirmedDeaths == 'NA', NA_real_, df_country$ConfirmedDeaths)), fromLast = FALSE)
+  for (meas in measures){
+    df_country[,meas] = na.locf(with(df_country, ifelse(df_country[,meas] == 'NA', NA_real_, df_country[,meas])), fromLast = FALSE)
   }
   
+  # find row of zero-th day (when cases first >= limit)
+  x = Position(function(x) x > limit, df_country$ConfirmedCases)
+  
+  # remove any data prior to zero-th day
+  df_country_reset = tail(df_country, -x)
+  
+  # find dates to extract data from based on interval chosen
+  dates = sort(df_country_reset$Date)
+  dates = dates[seq(1, length(dates), interval)]
+  
+  # for every date of interest
+  for (d in seq_along(dates)){
+    
+    # subset of data only prior to date of interest
+    df_date = subset(df_country_reset, Date <= dates[d])
+    
+    # cumulate the measures
+    cols = colSums(df_date[measures], na.rm = TRUE)
+    
+    # calculate growth rate
+    if (d==1){
+      g_rate = 0
+    }
+    else{
+      g_rate = as.integer(df_date$ConfirmedCases[df_date$Date == dates[d]] - df_date$ConfirmedCases[df_date$Date == dates[d-1]])
+    }
+
+    # add data for specified date and country to dataframe
+    df_flat <- rbind(df_flat, data.frame(Date = dates[d],
+                    Day = as.integer(dates[d]-dates[1]),
+                     CountryName = country,
+                     CountryCode = cc,
+                     S1_School.closing = as.integer(cols['S1_School.closing']),
+                     S2_Workplace.closing = as.integer(cols['S2_Workplace.closing']),
+                     S3_Cancel.public.events = as.integer(cols['S3_Cancel.public.events']),
+                     S4_Close.public.transport = as.integer(cols['S4_Close.public.transport']),
+                     S5_Public.information.campaigns = as.integer(cols['S5_Public.information.campaigns']),
+                     S6_Restrictions.on.internal.movement = as.integer(cols['S6_Restrictions.on.internal.movement']),
+                     S7_International.travel.controls = as.integer(cols['S7_International.travel.controls']),
+                     S8_Fiscal.measures = cols['S8_Fiscal.measures'],
+                     S9_Monetary.measures = cols['S9_Monetary.measures'],
+                     S10_Emergency.investment.in.health.care = cols['S10_Emergency.investment.in.health.care'],
+                     S11_Investment.in.Vaccines = cols['S11_Investment.in.Vaccines'],
+                     S12_Testing.framework = as.integer(cols['S12_Testing.framework']),
+                     S13_Contact.tracing = as.integer(cols['S13_Contact.tracing']),
+                     StringencyIndexForDisplay = cols['StringencyIndexForDisplay'],
+                     ConfirmedCases = as.integer(df_date$ConfirmedCases[df_date$Date == dates[d]]),
+                     ConfirmedDeaths = as.integer(df_date$ConfirmedDeaths[df_date$Date == dates[d]]),
+                    GrowthRate = g_rate))
+                    
+  }
 }
 
+str(df_flat)
 
-# sum all previous
-# add to new df
 ```
 
+### Linear Regression
+#### Death Rate
 ```{r}
+#Replace some values to unify the units.
+df_flat$S11_Investment.in.Vaccines[df_flat$S11_Investment.in.Vaccines>1000]<-with(df_flat,S11_Investment.in.Vaccines[df_flat$S11_Investment.in.Vaccines>1000]*0.000001)
+df_flat$S11_Investment.in.Vaccines<-round(df_flat$S11_Investment.in.Vaccines,1)
 
-### We do our prediction based on the data on 20200408
-df_20200408<-subset(data,select=c("CountryName","Date","ConfirmedCases","ConfirmedDeaths"))
-df_20200408<-subset(df_20200408,Date=="20200408")
-df_20200408$DeathRate<-round(df_20200408$ConfirmedDeaths/df_20200408$ConfirmedCases,3)
-str(df_20200408)
-install.packages("lubridate")
-library(lubridate)
-df_20200408$Date<- ymd(df_20200408[, 2]) #Converting integer to date formate
-
-### Try to create some variables showing how many days those countries have closed schools, governments and workplace. TBC.
-library(dplyr)
-df_school<-subset(data,select="CountryName")
-df_school$CloseSchool<-ifelse(data$S1_School.closing==2,data$Date,NA)
+df_flat$S10_Emergency.investment.in.health.care[df_flat$S10_Emergency.investment.in.health.care>100000]<-with(df_flat,S10_Emergency.investment.in.health.care[df_flat$S10_Emergency.investment.in.health.care>100000]*0.000001)
+df_flat$S10_Emergency.investment.in.health.care<-round(df_flat$S10_Emergency.investment.in.health.care,1)
 
 
+# Creating a column named 'Death Rate' as the dependent variable.
+df_flat$DeathRate<-round(df_flat$ConfirmedDeaths/df_flat$ConfirmedCases,3)
+library(lmtest)
+library(car)
+
+
+# Run Linear Regression model. 
+df_flat_model<-lm(DeathRate ~ S1_School.closing+S2_Workplace.closing+S3_Cancel.public.events+S4_Close.public.transport+S5_Public.information.campaigns+S6_Restrictions.on.internal.movement+S7_International.travel.controls+S9_Monetary.measures+S10_Emergency.investment.in.health.care+S11_Investment.in.Vaccines+S12_Testing.framework+S13_Contact.tracing+S6_Restrictions.on.internal.movement*S7_International.travel.controls*S4_Close.public.transport+S1_School.closing*S2_Workplace.closing,  data=df_flat)
+summary(df_flat_model)
+residualPlots(df_flat_model)
+
+  
 ```
 
+#### Growth Rate
+```{r}
+str(df_flat)
+# Run Linear Regression model. 
+g_rate_mod<-lm(GrowthRate ~ S1_School.closing +S2_Workplace.closing +S3_Cancel.public.events +S4_Close.public.transport +S5_Public.information.campaigns +S6_Restrictions.on.internal.movement +S7_International.travel.controls +S8_Fiscal.measures +S9_Monetary.measures +S10_Emergency.investment.in.health.care +S11_Investment.in.Vaccines +S12_Testing.framework +S13_Contact.tracing,  data=df_flat)
+summary(g_rate_mod)
+#residualPlots(df_flat_model)
 
+  
+```
 
 ### Explore Notes Columns
 To explore the notes data, we just peaked into one of the columns to see what kind of announcements they are using.
