@@ -278,21 +278,23 @@ str(df_flat)
 
 ```
 
+
 ```{r}
-### We do our prediction based on the data on 20200408
-df_20200408<-subset(data,select=c("CountryName","Date","ConfirmedCases","ConfirmedDeaths"))
-df_20200408<-subset(df_20200408,Date=="20200408")
-df_20200408$DeathRate<-round(df_20200408$ConfirmedDeaths/df_20200408$ConfirmedCases,3)
-str(df_20200408)
-install.packages("lubridate")
-library(lubridate)
-df_20200408$Date<- ymd(df_20200408[, 2]) #Converting integer to date formate
+df_flat$DeathRate<-round(df_flat$ConfirmedDeaths/df_flat$ConfirmedCases,3)
+library(lmtest)
+library(car)
 
-### Try to create some variables showing how many days those countries have closed schools, governments and workplace. TBC.
-library(dplyr)
-df_school<-subset(data,select="CountryName")
-df_school$CloseSchool<-ifelse(data$S1_School.closing==2,data$Date,NA)
-
+# Run Linear Regression excluding outliers (Iran). The output shows that 3 variables are statistically significant to Death Rate and the p-values are closing to '0'. Also, this could improve the Adjusted R-squared from 0.1615 to0.4889.
+df_flat_2<-df_flat[!(df_flat$CountryName=="Iran"),]
+df_flat_model_2<-lm(DeathRate ~ S1_School.closing+S2_Workplace.closing+S3_Cancel.public.events+S4_Close.public.transport+S5_Public.information.campaigns+S6_Restrictions.on.internal.movement+S7_International.travel.controls, data=df_flat_2 )
+summary(df_flat_model_2)
+residualPlots(df_flat_model_2)
+  
+  
+# Linear Regression model without removing outliers. 3 variables are statistically significant, but only 1 of them are closing to '0', two others are greater than 0.01.
+df_flat_model<-lm(DeathRate ~ S1_School.closing+S2_Workplace.closing+S3_Cancel.public.events+S4_Close.public.transport+S5_Public.information.campaigns+S6_Restrictions.on.internal.movement+S7_International.travel.controls, data=df_flat )
+summary(df_flat_model)
+residualPlots(df_flat_model)
 
 ```
 
