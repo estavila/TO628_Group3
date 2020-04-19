@@ -298,7 +298,7 @@ for(country in top){
                        + S4_Close.public.transport + S5_Public.information.campaigns + S6_Restrictions.on.internal.movement
                        + S7_International.travel.controls + S8_Fiscal.measures + S9_Monetary.measures
                        + S10_Emergency.investment.in.health.care + S11_Investment.in.Vaccines + S12_Testing.framework 
-                       + S13_Contact.tracing + StringencyIndexForDisplay, data = subset(df_flat, CountryName == ))
+                       + S13_Contact.tracing + StringencyIndexForDisplay, data = subset(df_flat, CountryName == country ))
   
   summary(df_model_2)
 }
