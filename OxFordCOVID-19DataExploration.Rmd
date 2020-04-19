@@ -86,17 +86,29 @@ top
 # take the subset of data related to top countries
 df_top = subset(data, CountryName %in% top)
 df_top = subset(df_top, df_top$Date <= e_date)
+
 # drop unused levels from all factors
 df_top[] = lapply(df_top, function(x) if(is.factor(x)) factor(x) else x)
 df = df_top
 ```
 
+#### Dealing with General vs Targetted
+Data includes targeted and general measures. When the general column is 1 it means the measure was general (for the whole country), when the general column is 0 it means the measure was targetted to a specific geographical locaiton. We are only interested in looking at data generally applied to the whole country.
+```{r ,}
+# find columns with General in name
+General = c(grep( "General" , names( df) ))
+
+# multiple isGeneral column to measure column and only look at general data
+for (column in General){
+  df[,column-1] = df[,column] * df[,column-1]
+}
+```
+
 #### Separate or remove excess columns
 The Notes and General columns do not pertain to our prediction model. We will also only be using the Display Stringency Index as it is more complete.
 ```{r ,}
-# find columns with Notes or General in name
+# find columns with Notes in name
 Notes = c(grep( "Notes" , names( df) ))
-General = c(grep( "General" , names( df) ))
 # save notes and general as separate df's
 df_notes = subset(df, select = Notes )
 df_general = subset( df, select = General )
@@ -119,12 +131,6 @@ df[df$Date == 20200101 & is.na(df)] <- 0
 
 ```
 
-#### Dealing with General vs Targetted
-Data includes targeted and general measures. Should we be treating them differently?
-```{r ,}
-#
-
-```
 
 #### Convert Date Column to Date Format
 Date column is in integer format, we converted it to date format to be able to find differences between dates.
@@ -189,19 +195,22 @@ for (country in top) {
   df_country = subset(df, CountryName == country)
   # get the country code for that country
   cc = levels(factor(df_country$CountryCode))
-  
+
   # fill NA values with last non-NA value for that country
   df_country$ConfirmedCases = na.locf(with(df_country, ifelse(df_country$ConfirmedCases == 'NA', NA_real_, df_country$ConfirmedCases)), fromLast = FALSE)
   df_country$ConfirmedDeaths = na.locf(with(df_country, ifelse(df_country$ConfirmedDeaths == 'NA', NA_real_, df_country$ConfirmedDeaths)), fromLast = FALSE)
-
-  # find zero-th day (when cases first >= limit)
+  for (meas in measures){
+    df_country[,meas] = na.locf(with(df_country, ifelse(df_country[,meas] == 'NA', NA_real_, df_country[,meas])), fromLast = FALSE)
+  }
+  
+  # find row of zero-th day (when cases first >= limit)
   x = Position(function(x) x > limit, df_country$ConfirmedCases)
   
   # remove any data prior to zero-th day
   df_country_reset = tail(df_country, -x)
   
   # find dates to extract data from based on interval chosen
-  dates = sort(unique(df_country_reset$Date, incomparables = FALSE))
+  dates = sort(df_country_reset$Date)
   dates = dates[seq(1, length(dates), interval)]
   
   # for every date of interest
@@ -257,16 +266,11 @@ library(lmtest)
 library(car)
 
 
-# Run Linear Regression model without removing outliers. 3 variables are statistically significant, but only 1 of them are closing to '0', two others are greater than 0.01.
-df_flat_model<-lm(DeathRate ~ S1_School.closing+S2_Workplace.closing+S3_Cancel.public.events+S4_Close.public.transport+S5_Public.information.campaigns+S6_Restrictions.on.internal.movement+S7_International.travel.controls, data=df_flat )
+# Run Linear Regression model. 
+df_flat_model<-lm(DeathRate ~ S1_School.closing+S2_Workplace.closing+S3_Cancel.public.events+S4_Close.public.transport+S5_Public.information.campaigns+S6_Restrictions.on.internal.movement+S7_International.travel.controls+S9_Monetary.measures+S10_Emergency.investment.in.health.care+S11_Investment.in.Vaccines+S12_Testing.framework+S13_Contact.tracing+S6_Restrictions.on.internal.movement*S7_International.travel.controls*S4_Close.public.transport+S1_School.closing*S2_Workplace.closing,  data=df_flat)
 summary(df_flat_model)
 residualPlots(df_flat_model)
 
-# Run Linear Regression excluding outliers (Iran). The output shows that 3 variables (closing workplace, closing public transport, and public information campaigns) are statistically significant to Death Rate and the p-values are closing to '0'. Also, this could improve the Adjusted R-squared from 0.1615 to 0.4889.
-df_flat_2<-df_flat[!(df_flat$CountryName=="Iran"),]
-df_flat_model_2<-lm(DeathRate ~ S1_School.closing+S2_Workplace.closing+S3_Cancel.public.events+S4_Close.public.transport+S5_Public.information.campaigns+S6_Restrictions.on.internal.movement+S7_International.travel.controls+S10_Emergency.investment.in.health.care+S11_Investment.in.Vaccines, data=df_flat_2 )
-summary(df_flat_model_2)
-residualPlots(df_flat_model_2)
   
 ```
 
