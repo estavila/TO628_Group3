@@ -171,6 +171,7 @@ df_flat <- data.frame(Date=as.Date(character()),
                      StringencyIndexForDisplay = double(),
                      ConfirmedCases = integer(),
                      ConfirmedDeaths = integer(),
+                     GrowthRate = integer(),
                      stringsAsFactors=FALSE) 
 
 str(df_flat)
@@ -221,6 +222,14 @@ for (country in top) {
     
     # cumulate the measures
     cols = colSums(df_date[measures], na.rm = TRUE)
+    
+    # calculate growth rate
+    if (d==1){
+      g_rate = 0
+    }
+    else{
+      g_rate = as.integer(df_date$ConfirmedCases[df_date$Date == dates[d]] - df_date$ConfirmedCases[df_date$Date == dates[d-1]])
+    }
 
     # add data for specified date and country to dataframe
     df_flat <- rbind(df_flat, data.frame(Date = dates[d],
@@ -243,6 +252,7 @@ for (country in top) {
                      StringencyIndexForDisplay = cols['StringencyIndexForDisplay'],
                      ConfirmedCases = as.integer(df_date$ConfirmedCases[df_date$Date == dates[d]]),
                      ConfirmedDeaths = as.integer(df_date$ConfirmedDeaths[df_date$Date == dates[d]])))
+                    GrowthRate = g_rate
   }
 }
 
@@ -251,6 +261,7 @@ str(df_flat)
 ```
 
 ### Linear Regression
+#### Death Rate
 ```{r}
 #Replace some values to unify the units.
 df_flat$S11_Investment.in.Vaccines[df_flat$S11_Investment.in.Vaccines>1000]<-with(df_flat,S11_Investment.in.Vaccines[df_flat$S11_Investment.in.Vaccines>1000]*0.000001)
@@ -274,7 +285,15 @@ residualPlots(df_flat_model)
   
 ```
 
+#### Growth Rate
+```{r}
+# Run Linear Regression model. 
+g_rate_mod<-lm(GrowthRate ~ S1_School.closing+S2_Workplace.closing+S3_Cancel.public.events+S4_Close.public.transport+S5_Public.information.campaigns+S6_Restrictions.on.internal.movement+S7_International.travel.controls+S8_Fiscal.measures+S9_Monetary.measures+S10_Emergency.investment.in.health.care+S11_Investment.in.Vaccines+S12_Testing.framework+S13_Contact.tracing,  data=df_flat)
+summary(g_rate_mod)
+#residualPlots(df_flat_model)
 
+  
+```
 
 ### Explore Notes Columns
 To explore the notes data, we just peaked into one of the columns to see what kind of announcements they are using.
