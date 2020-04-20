@@ -277,7 +277,7 @@ library(car)
 
 
 # Run Linear Regression model. 
-df_flat_model<-lm(DeathRate ~ S1_School.closing+S2_Workplace.closing+S3_Cancel.public.events+S4_Close.public.transport+S5_Public.information.campaigns+S6_Restrictions.on.internal.movement+S7_International.travel.controls+S9_Monetary.measures+S10_Emergency.investment.in.health.care+S11_Investment.in.Vaccines+S12_Testing.framework+S13_Contact.tracing+S6_Restrictions.on.internal.movement*S7_International.travel.controls*S4_Close.public.transport+S1_School.closing*S2_Workplace.closing,  data=df_flat)
+df_flat_model<-lm(DeathRate ~ S1_School.closing+S2_Workplace.closing+S3_Cancel.public.events+S4_Close.public.transport+S5_Public.information.campaigns+S6_Restrictions.on.internal.movement+S7_International.travel.controls+S9_Monetary.measures+S10_Emergency.investment.in.health.care+S11_Investment.in.Vaccines+S12_Testing.framework+S13_Contact.tracing+S6_Restrictions.on.internal.movement*S7_International.travel.controls*S4_Close.public.transport+S1_School.closing*S2_Workplace.closing+S3_Cancel.public.events*S4_Close.public.transport,  data=df_flat)
 summary(df_flat_model)
 residualPlots(df_flat_model)
 
