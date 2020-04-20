@@ -274,7 +274,7 @@ for (country in top) {
                      ConfirmedDeaths = as.integer(df_date$ConfirmedDeaths[df_date$Date == dates[d]]),
                     GrowthRate = g_rate,
                     ConfirmedCasesFut = as.integer(df_dateFut$ConfirmedCases[df_dateFut$Date == dates[d+fut]]),
-                    ConfirmedDeathsFut = as.integer(df_dateFut$ConfirmedCases[df_dateFut$Date == dates[d+fut]]),
+                    ConfirmedDeathsFut = as.integer(df_dateFut$ConfirmedDeaths[df_dateFut$Date == dates[d+fut]]),
                     GrowthRateFut = g_rateFut))
   }
 }
