@@ -524,41 +524,36 @@ summary(df_model_Germany_2)
 
 India
 ```{r}
-df_model_India_1 <- lm(ConfirmedDeaths ~ S1_School.closing + S2_Workplace.closing + S3_Cancel.public.events
-                       + S4_Close.public.transport + S5_Public.information.campaigns + S6_Restrictions.on.internal.movement
-                       + S7_International.travel.controls + S8_Fiscal.measures + S9_Monetary.measures
-                       + S10_Emergency.investment.in.health.care + S11_Investment.in.Vaccines + S12_Testing.framework 
-                       + S13_Contact.tracing + StringencyIndexForDisplay, data = subset(df_flat, CountryName == "India"))
+df_model_India_1 <- lm(ConfirmedDeaths ~ S1_School.closing  + S2_Workplace.closing
+                      + S12_Testing.framework
+                       , data = subset(df_flat, CountryName == "India"))
   
 summary(df_model_India_1)
 
-df_model_India_2 <- lm(ConfirmedCases ~ S1_School.closing + S2_Workplace.closing + S3_Cancel.public.events
-                       + S4_Close.public.transport + S5_Public.information.campaigns + S6_Restrictions.on.internal.movement
-                       + S7_International.travel.controls + S8_Fiscal.measures + S9_Monetary.measures
-                       + S10_Emergency.investment.in.health.care + S11_Investment.in.Vaccines + S12_Testing.framework 
-                       + S13_Contact.tracing + StringencyIndexForDisplay, data = subset(df_flat, CountryName == "India"))
+
+df_model_India_2 <- lm(ConfirmedCases ~ S1_School.closing + S2_Workplace.closing
+                       + S12_Testing.framework
+                       , data = subset(df_flat, CountryName == "India"))
   
 summary(df_model_India_2)
+
+
 ```
 
 
 Iran
 ```{r}
-df_model_Iran_1 <- lm(ConfirmedDeaths ~ S1_School.closing + S2_Workplace.closing + S3_Cancel.public.events
-                       + S4_Close.public.transport + S5_Public.information.campaigns + S6_Restrictions.on.internal.movement
-                       + S7_International.travel.controls + S8_Fiscal.measures + S9_Monetary.measures
-                       + S10_Emergency.investment.in.health.care + S11_Investment.in.Vaccines + S12_Testing.framework 
-                       + S13_Contact.tracing + StringencyIndexForDisplay, data = subset(df_flat, CountryName == "Iran"))
+df_model_Iran_1 <- lm(ConfirmedDeaths ~ S1_School.closing + S3_Cancel.public.events
+                      + S8_Fiscal.measures
+                      , data = subset(df_flat, CountryName == "Iran"))
   
 summary(df_model_Iran_1)
 
-df_model_Iran_2 <- lm(ConfirmedCases ~ S1_School.closing + S2_Workplace.closing + S3_Cancel.public.events
-                       + S4_Close.public.transport + S5_Public.information.campaigns + S6_Restrictions.on.internal.movement
-                       + S7_International.travel.controls + S8_Fiscal.measures + S9_Monetary.measures
-                       + S10_Emergency.investment.in.health.care + S11_Investment.in.Vaccines + S12_Testing.framework 
-                       + S13_Contact.tracing + StringencyIndexForDisplay, data = subset(df_flat, CountryName == "Iran"))
+df_model_Iran_2 <- lm(ConfirmedCases ~ S8_Fiscal.measures + S1_School.closing 
+                     , data = subset(df_flat, CountryName == "Iran"))
   
 summary(df_model_Iran_2)
+
 ```
 
 Ireland
@@ -618,6 +613,11 @@ df_model_Italy_2 <- lm(ConfirmedCases ~ S1_School.closing + S2_Workplace.closing
   
 summary(df_model_Italy_2)
 ```
+
+
+
+
+
 
 
 ### Explore Notes Columns
