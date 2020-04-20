@@ -614,12 +614,7 @@ df_model_Italy_2 <- lm(ConfirmedCases ~ S1_School.closing + S2_Workplace.closing
 summary(df_model_Italy_2)
 ```
 
-
-
-
-
-
-
+```
 ### Explore Notes Columns
 To explore the notes data, we just peaked into one of the columns to see what kind of announcements they are using.
 ```{r ,}
