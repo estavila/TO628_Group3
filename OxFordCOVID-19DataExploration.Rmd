@@ -172,6 +172,11 @@ df_flat <- data.frame(Date=as.Date(character()),
                      ConfirmedCases = integer(),
                      ConfirmedDeaths = integer(),
                      GrowthRate = integer(),
+
+                     ConfirmedCasesFut = integer(),
+                     ConfirmedDeathsFut = integer(),
+                     GrowthRateFut = integer(),
+
                      stringsAsFactors=FALSE) 
 
 str(df_flat)
@@ -185,6 +190,9 @@ limit = 100
 
 # interval between dates captured
 interval = 2
+
+# num of intervals in future
+fut = 2
 
 
 # library needed to back fill NA values
@@ -213,16 +221,19 @@ for (country in top) {
   # find dates to extract data from based on interval chosen
   dates = sort(df_country_reset$Date)
   dates = dates[seq(1, length(dates), interval)]
-  
+  dates_ = head(dates,-fut)
+
   # for every date of interest
-  for (d in seq_along(dates)){
+  for (d in seq_along(dates_)){
     
     # subset of data only prior to date of interest
+    df_dateFut = subset(df_country_reset, Date <= dates[d+fut])
     df_date = subset(df_country_reset, Date <= dates[d])
     
     # cumulate the measures
     cols = colSums(df_date[measures], na.rm = TRUE)
     
+
     # calculate growth rate
     if (d==1){
       g_rate = 0
@@ -230,6 +241,15 @@ for (country in top) {
     else{
       g_rate = as.integer(df_date$ConfirmedCases[df_date$Date == dates[d]] - df_date$ConfirmedCases[df_date$Date == dates[d-1]])
     }
+
+    if (d ==1){
+      g_rate = 0
+    }
+    else{
+      g_rate = as.integer(df_date$ConfirmedCases[df_date$Date == dates[d]]-df_date$ConfirmedCases[df_date$Date == dates[d-1]])
+    }
+    g_rateFut = as.integer(df_dateFut$ConfirmedCases[df_dateFut$Date == dates[d+fut]]-df_dateFut$ConfirmedCases[df_dateFut$Date == dates[d+fut-1]])
+
 
     # add data for specified date and country to dataframe
     df_flat <- rbind(df_flat, data.frame(Date = dates[d],
@@ -252,8 +272,10 @@ for (country in top) {
                      StringencyIndexForDisplay = cols['StringencyIndexForDisplay'],
                      ConfirmedCases = as.integer(df_date$ConfirmedCases[df_date$Date == dates[d]]),
                      ConfirmedDeaths = as.integer(df_date$ConfirmedDeaths[df_date$Date == dates[d]]),
-                    GrowthRate = g_rate))
-                    
+                    GrowthRate = g_rate,
+                    ConfirmedCasesFut = as.integer(df_dateFut$ConfirmedCases[df_dateFut$Date == dates[d+fut]]),
+                    ConfirmedDeathsFut = as.integer(df_dateFut$ConfirmedCases[df_dateFut$Date == dates[d+fut]]),
+                    GrowthRateFut = g_rateFut))
   }
 }
 
@@ -279,14 +301,22 @@ library(car)
 
 
 # Run Linear Regression model. 
-df_flat_model<-lm(DeathRate ~ S1_School.closing+S2_Workplace.closing+S3_Cancel.public.events+S4_Close.public.transport+S5_Public.information.campaigns+S6_Restrictions.on.internal.movement+S7_International.travel.controls+S9_Monetary.measures+S10_Emergency.investment.in.health.care+S11_Investment.in.Vaccines+S12_Testing.framework+S13_Contact.tracing+S6_Restrictions.on.internal.movement*S7_International.travel.controls*S4_Close.public.transport+S1_School.closing*S2_Workplace.closing,  data=df_flat)
+df_flat_model<-lm(DeathRate ~ S1_School.closing+S2_Workplace.closing+S3_Cancel.public.events+S4_Close.public.transport+S5_Public.information.campaigns+S6_Restrictions.on.internal.movement+S7_International.travel.controls+S9_Monetary.measures+S10_Emergency.investment.in.health.care+S11_Investment.in.Vaccines+S12_Testing.framework+S13_Contact.tracing+S6_Restrictions.on.internal.movement*S7_International.travel.controls*S4_Close.public.transport+S1_School.closing*S2_Workplace.closing+S3_Cancel.public.events*S4_Close.public.transport,  data=df_flat)
 summary(df_flat_model)
 residualPlots(df_flat_model)
 
   
 ```
+#### Death Rate
+```{r}
+# Run Linear Regression model. 
+g_rate_model<-lm(GrowthRate ~ S1_School.closing+S2_Workplace.closing+S3_Cancel.public.events+S4_Close.public.transport+S5_Public.information.campaigns+S6_Restrictions.on.internal.movement+S7_International.travel.controls+S8_Fiscal.measures+S9_Monetary.measures+S10_Emergency.investment.in.health.care+S11_Investment.in.Vaccines+S12_Testing.framework+S13_Contact.tracing,  data=df_flat)
+summary(g_rate_model)
+residualPlots(g_rate_model)
 
-<<<<<<< HEAD
+
+```
+>>>>>>> 92edc5e559b23d4a10fed09ce1c1dc774c90deb7
 
 ###Linear Regression #2
 
@@ -374,15 +404,16 @@ India
 df_model_India_1 <- lm(ConfirmedDeaths ~ S1_School.closing  + S2_Workplace.closing
                       + S12_Testing.framework
                        , data = subset(df_flat, CountryName == "India"))
- 
+  
 summary(df_model_India_1)
 
 
 df_model_India_2 <- lm(ConfirmedCases ~ S1_School.closing + S2_Workplace.closing
                        + S12_Testing.framework
                        , data = subset(df_flat, CountryName == "India"))
- 
+  
 summary(df_model_India_2)
+
 ```
 
 Sweden
@@ -392,9 +423,11 @@ df_model_Sweden_1 <- lm(ConfirmedDeaths ~ S3_Cancel.public.events + S6_Restricti
 summary(df_model_Sweden_1)
 
 
+
 df_model_Sweden_2 <- lm(ConfirmedCases ~ S6_Restrictions.on.internal.movement + S7_International.travel.controls, data = subset(df_flat, CountryName == "Sweden"))
 
 summary(df_model_Sweden_2)
+
 ```
 
 China
@@ -403,6 +436,18 @@ df_model_China_1 <- lm(ConfirmedDeaths ~ S1_School.closing, data = subset(df_fla
 
 summary(df_model_China_1)
 
+df_model_Iran_1 <- lm(ConfirmedDeaths ~ S1_School.closing + S3_Cancel.public.events
+                      + S8_Fiscal.measures
+                      , data = subset(df_flat, CountryName == "Iran"))
+  
+summary(df_model_Iran_1)
+
+df_model_Iran_2 <- lm(ConfirmedCases ~ S8_Fiscal.measures + S1_School.closing 
+                     , data = subset(df_flat, CountryName == "Iran"))
+  
+summary(df_model_Iran_2)
+
+```
 
 df_model_China_2 <- lm(ConfirmedCases ~ S1_School.closing + S2_Workplace.closing + S8_Fiscal.measures, data = subset(df_flat, CountryName == "China"))
   
@@ -436,6 +481,10 @@ summary(g_rate_mod)
   
 ```
 
+<<<<<<< HEAD
+=======
+```
+>>>>>>> 92edc5e559b23d4a10fed09ce1c1dc774c90deb7
 ### Explore Notes Columns
 To explore the notes data, we just peaked into one of the columns to see what kind of announcements they are using.
 ```{r ,}
