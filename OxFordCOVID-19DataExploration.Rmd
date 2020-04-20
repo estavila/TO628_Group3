@@ -172,6 +172,9 @@ df_flat <- data.frame(Date=as.Date(character()),
                      ConfirmedCases = integer(),
                      ConfirmedDeaths = integer(),
                      GrowthRate = integer(),
+                     ConfirmedCasesFut = integer(),
+                     ConfirmedDeathsFut = integer(),
+                     GrowthRateFut = integer(),
                      stringsAsFactors=FALSE) 
 
 str(df_flat)
@@ -185,6 +188,9 @@ limit = 100
 
 # interval between dates captured
 interval = 3
+
+# num of intervals in future
+fut = 2
 
 
 # library needed to back fill NA values
@@ -213,11 +219,13 @@ for (country in top) {
   # find dates to extract data from based on interval chosen
   dates = sort(df_country_reset$Date)
   dates = dates[seq(1, length(dates), interval)]
-  
+  dates_ = head(dates,-fut)
+
   # for every date of interest
-  for (d in seq_along(dates)){
+  for (d in seq_along(dates_)){
     
     # subset of data only prior to date of interest
+    df_dateFut = subset(df_country_reset, Date <= dates[d+fut])
     df_date = subset(df_country_reset, Date <= dates[d])
     
     # cumulate the measures
@@ -227,8 +235,9 @@ for (country in top) {
       g_rate = 0
     }
     else{
-      g_rate = as.integer(df_date$ConfirmedCases[df_date$Date == dates[d]]-df_date$ConfirmedCases[df_date$Date == dates[1]])
+      g_rate = as.integer(df_date$ConfirmedCases[df_date$Date == dates[d]]-df_date$ConfirmedCases[df_date$Date == dates[d-1]])
     }
+    g_rateFut = as.integer(df_dateFut$ConfirmedCases[df_dateFut$Date == dates[d+fut]]-df_dateFut$ConfirmedCases[df_dateFut$Date == dates[d+fut-1]])
 
     # add data for specified date and country to dataframe
     df_flat <- rbind(df_flat, data.frame(Date = dates[d],
@@ -251,7 +260,10 @@ for (country in top) {
                      StringencyIndexForDisplay = cols['StringencyIndexForDisplay'],
                      ConfirmedCases = as.integer(df_date$ConfirmedCases[df_date$Date == dates[d]]),
                      ConfirmedDeaths = as.integer(df_date$ConfirmedDeaths[df_date$Date == dates[d]]),
-                    GrowthRate = g_rate))
+                    GrowthRate = g_rate,
+                    ConfirmedCasesFut = as.integer(df_dateFut$ConfirmedCases[df_dateFut$Date == dates[d+fut]]),
+                    ConfirmedDeathsFut = as.integer(df_dateFut$ConfirmedCases[df_dateFut$Date == dates[d+fut]]),
+                    GrowthRateFut = g_rateFut))
   }
 }
 
