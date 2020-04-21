@@ -340,7 +340,7 @@ summary(g_ratef_mod3)
 
 
 #### Linear Regression by Country.
-We chose United States, China, Italy, and Iran since they have been hit the hardest by COVID-19. We then chose Germany and South Korea due to their exemplary responses to the situation. Lastly, we chose United Kingdom, Sweden, and India because they are either interesting cases or are taking controversial measures. 
+We chose United States, China, Italy, and Iran since they have been hit the hardest by COVID-19. We then chose Germany and South Korea due to their exemplary responses to the situation. Lastly, we chose United Kingdom, Sweden, and India because they are either interesting cases or are taking controversial measures. As for the models, we only chose factors that are significant to each country, which means that the p-values of the factors have to be less than 0.05. Since each country only has around 20-24 rows of data, it did not make sense for us to split the data into training and testing. 
 
 ```{r}
 library(lmtest)
@@ -365,7 +365,7 @@ df_model_Germany_2 <- lm(ConfirmedCasesFut ~  S1_School.closing + S4_Close.publi
   
 summary(df_model_Germany_2)
 ```
-
+For Germany, Workingplace Closing, Public Transportation Closing has a positive  
 
 US
 ```{r}
