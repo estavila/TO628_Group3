@@ -189,7 +189,7 @@ str(df_flat)
 limit = 100
 
 # interval between dates captured
-interval = 2
+interval = 3
 
 # num of intervals in future
 fut = 4
@@ -339,11 +339,7 @@ library(lmtest)
 library(car)
 
 df_flat$CountryCode <- NULL
-<<<<<<< HEAD
-colnames(df_flat)
 
-=======
->>>>>>> f8e215ca393f268aed267d4ceaf8841e867dfd8d
 ```
 
 Germany
