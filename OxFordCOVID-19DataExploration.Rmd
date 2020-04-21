@@ -340,7 +340,7 @@ The above model indicatest that Restrictions on internal movement, International
 
 
 #### Linear Regression by Country.
-We chose United States, China, Italy, and Iran since they have been hit the hardest by COVID-19. We then chose Germany and South Korea due to their exemplary responses to the situation. Lastly, we chose United Kingdom, Sweden, and India because they are either interesting cases or are taking controversial measures. 
+We chose United States, China, Italy, and Iran since they have been hit the hardest by COVID-19. We then chose Germany and South Korea due to their exemplary responses to the situation. Lastly, we chose United Kingdom, Sweden, and India because they are either interesting cases or are taking controversial measures. As for the models, we only chose factors that are significant to each country, which means that the p-values of the factors have to be less than 0.05. Since each country only has around 20-24 rows of data, it did not make sense for us to split the data into training and testing.In addition, we used future Confirmed Deaths and future Confirmed Cases (in this case, 4 days after the current date) to perform analysis to account for the delays after the measures were enforced.
 
 ```{r ,}
 # create empty data frame
@@ -486,7 +486,7 @@ df_flat$CountryCode <- NULL
 
 ```
 
-Germany
+#####Germany
 ```{r}
 #Germany
 library(lmtest)
@@ -502,9 +502,9 @@ df_model_Germany_2 <- lm(ConfirmedCasesFut ~  S1_School.closing + S4_Close.publi
   
 summary(df_model_Germany_2)
 ```
+For Germany, Workingplace Closing, Public Transportation Closing, and School Closing have positive correlations with the number of confirmed cases and death increasing, whereas Fiscal Measures and International Travel Controls have a negative correlation.
 
-
-US
+#####US
 ```{r}
 df_model_US_1 <- lm(ConfirmedDeathsFut ~ S5_Public.information.campaigns + S6_Restrictions.on.internal.movement
                     + S8_Fiscal.measures, data = subset(df_flat, CountryName == "United States"))
@@ -515,8 +515,9 @@ df_model_US_2 <- lm(ConfirmedCasesFut ~ S5_Public.information.campaigns + S6_Res
   
 summary(df_model_US_2)
 ```
+For the US, Public Information Campaign has a positive correlation with the number of confirmed cases and death increasing, whereas Restriction on Internal Movement and Fiscal Measures have a negative correlation.
 
-UK
+#####UK
 
 ```{r}
 df_model_UK_1 <- lm(ConfirmedDeathsFut ~ S1_School.closing  + S3_Cancel.public.events
@@ -536,7 +537,9 @@ df_model_UK_2 <- lm(ConfirmedCasesFut ~ S1_School.closing + S2_Workplace.closing
 summary(df_model_UK_2)
 ```
 
-South Korea
+For the UK, Workplace Closing, Public Information Campaigns, Restrictions on Internal Movement, Fiscal Measures, Contact Tracing, Stringency Index have positive correlations with the number of confirmed cases and death increasing, whereas Restriction on Internal Movement and Fiscal Measures have a negative correlation.
+
+#####South Korea
 ```{r}
 df_model_SouthKorea_1 <- lm(ConfirmedDeathsFut ~ S3_Cancel.public.events + S9_Monetary.measures
                             + StringencyIndexForDisplay, data = subset(df_flat, CountryName == "South Korea"))
@@ -553,7 +556,10 @@ df_model_SouthKorea_2 <- lm(ConfirmedCasesFut ~ S6_Restrictions.on.internal.move
 summary(df_model_SouthKorea_2)
 ```
 
-Iran
+For South Korea, Public Information Campaign has a positive correlation with the number of confirmed cases and death increasing, whereas Restriction on Internal Movement and Fiscal Measures have a negative correlation.
+
+
+#####Iran
 ```{r}
 df_model_Iran_1 <- lm(ConfirmedDeathsFut ~ S1_School.closing + S3_Cancel.public.events
                          + StringencyIndexForDisplay, data = subset(df_flat, CountryName == "Iran"))
@@ -564,8 +570,10 @@ df_model_Iran_2 <- lm(ConfirmedCasesFut ~S3_Cancel.public.events
 
 summary(df_model_Iran_2)
 ```
+For Iran, School Closing, Stringency Index, and Fiscal Measures have positive correlations with the number of confirmed cases and death increasing, whereas Cancel Public Events has a negative correlation.
 
-India
+
+######India
 ```{r}
 df_model_India_1 <- lm(ConfirmedDeathsFut ~ S12_Testing.framework + S8_Fiscal.measures, data = subset(df_flat, CountryName == "India"))
   
@@ -577,8 +585,10 @@ df_model_India_2 <- lm(ConfirmedCasesFut ~ S12_Testing.framework + S8_Fiscal.mea
 summary(df_model_India_2)
 
 ```
+For India, Testing Framework has a positive correlation with the number of confirmed cases and death increasing, whereas Fiscal Measures has a negative correlation.
 
-Sweden
+
+#####Sweden
 ```{r}
 df_model_Sweden_1 <- lm(ConfirmedDeathsFut ~ S6_Restrictions.on.internal.movement + S7_International.travel.controls, data = subset(df_flat, CountryName == "Sweden"))
   
@@ -591,8 +601,9 @@ df_model_Sweden_2 <- lm(ConfirmedCasesFut ~ S6_Restrictions.on.internal.movement
 summary(df_model_Sweden_2)
 
 ```
+For Sweden, both Restrictions on Internal Movement and International Travel Controls have positive correlations with the number of confirmed cases and death increasing.
 
-China
+#####China
 ```{r}
 df_model_China_1 <- lm(ConfirmedDeathsFut ~S1_School.closing + S5_Public.information.campaigns
                          + S7_International.travel.controls + S9_Monetary.measures
@@ -611,9 +622,11 @@ df_model_China_2 <- lm(ConfirmedCasesFut ~ S2_Workplace.closing + S5_Public.info
 summary(df_model_China_2)
 
 ```
+For China, School Closing, Public Information Campaigns, and Workplace Closing have positive correlations with the number of confirmed cases and death increasing, whereas International Travel Controls, Monetary Measures, Stringency Index, and Emergency Investment in Healthcare have negative correlations.
 
 
-Italy
+
+#####Italy
 ```{r}
 df_model_Italy_1 <- lm(ConfirmedDeathsFut ~ S2_Workplace.closing 
                          + S4_Close.public.transport
@@ -627,7 +640,7 @@ df_model_Italy_2 <- lm(ConfirmedCasesFut ~ S1_School.closing + S2_Workplace.clos
   
 summary(df_model_Italy_2)
 ```
-
+For Italy, School Closing, Workplace Closing, and Close Public Transportation have positive correlations with the number of confirmed cases and death increasing, whereas Fiscal Measures has a negative correlation.
 
 #### Growth Rate
 
