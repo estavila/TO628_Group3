@@ -308,26 +308,35 @@ residualPlots(df_flat_model)
   
 ```
 #### Growth Rate
+A linear regression on growth rate vs all of the factors:
 ```{r}
 # Run Linear Regression model. 
 g_rate_mod1<-lm(GrowthRate ~ S1_School.closing+S2_Workplace.closing+S3_Cancel.public.events+S4_Close.public.transport+S5_Public.information.campaigns+S6_Restrictions.on.internal.movement+S7_International.travel.controls+S8_Fiscal.measures+S9_Monetary.measures+S10_Emergency.investment.in.health.care+S11_Investment.in.Vaccines+S12_Testing.framework+S13_Contact.tracing,  data=df_flat)
 summary(g_rate_mod1)
+residualPlots(g_rate_mod1)
+```
+The above model indicates that Restriction on internal movement, International travel controls, Fiscal measures, and Emergency investment in health care all have a positive correlation to growth rate. Meanwhile Workplace closing, and Monetary measures have a negative correlation with growth rate. All other individual factors do not have a statistically significant correlation with growth rate.
 
-g_rate_mod3<-lm(GrowthRate ~ S1_School.closing+S2_Workplace.closing+S3_Cancel.public.events+S4_Close.public.transport+S5_Public.information.campaigns+S6_Restrictions.on.internal.movement+S7_International.travel.controls+S8_Fiscal.measures+S9_Monetary.measures+S10_Emergency.investment.in.health.care+S11_Investment.in.Vaccines+S12_Testing.framework+S13_Contact.tracing+S6_Restrictions.on.internal.movement*S7_International.travel.controls*S4_Close.public.transport+S1_School.closing*S2_Workplace.closing+S3_Cancel.public.events*S4_Close.public.transport,  data=df_flat)
-summary(g_rate_mod3)
-residualPlots(g_rate_mod3)
+A linear regression on growth rate vs all of the factors and some interactions:
+```{r}
+# Run Linear Regression model with interactions
+
+g_rate_mod2<-lm(GrowthRate ~ S1_School.closing+S2_Workplace.closing+S3_Cancel.public.events+S4_Close.public.transport+S5_Public.information.campaigns+S6_Restrictions.on.internal.movement+S7_International.travel.controls+S8_Fiscal.measures+S9_Monetary.measures+S10_Emergency.investment.in.health.care+S11_Investment.in.Vaccines+S12_Testing.framework+S13_Contact.tracing+S6_Restrictions.on.internal.movement*S7_International.travel.controls*S4_Close.public.transport+S1_School.closing*S2_Workplace.closing+S3_Cancel.public.events*S4_Close.public.transport,  data=df_flat)
+summary(g_rate_mod2)
 
 ```
+The above model indicates that closing public transportaton, restriction on internal movement, International travel controls, Fiscal Measures, emergency investment in healthcare, the interaction between closing public transport and restriction on internal movement have a positive correlation with growth rate. Meanwhile, only the interaction between closing public transport and international travel controls as well as the interaction between calceling public events and closing public transport had a negative correlation with growth rate. All other factors and interactions did not have a statisticall significant correlation with growth rate in this model.
+
 #### Future Growth Rate
-Looking at 
+Looking at growth rate 12 days into the future of each measure values:
 ```{r}
 # Run Linear Regression model. 
 g_ratef_mod1<-lm(GrowthRateFut ~ S1_School.closing+S2_Workplace.closing+S3_Cancel.public.events+S4_Close.public.transport+S5_Public.information.campaigns+S6_Restrictions.on.internal.movement+S7_International.travel.controls+S8_Fiscal.measures+S9_Monetary.measures+S10_Emergency.investment.in.health.care+S11_Investment.in.Vaccines+S12_Testing.framework+S13_Contact.tracing,  data=df_flat)
 summary(g_ratef_mod1)
-residualPlots(g_ratef_mod3)
+#residualPlots(g_ratef_mod3)
 
 ```
-
+The above model indicatest that Restrictions on internal movement, International travel controls, Monetary measures, Emergency investment in health care, Investment in vaccines, and testing framework all had a positive correlation with the growth rate 12 days into the future. Meanwhile, closing schools and  cancelling public events had a negative correlation with growth rate 12 days into the future. All other factors did not have a statistically significant correlation.
 
 
 #### Linear Regression by Country.
