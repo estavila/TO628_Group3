@@ -282,6 +282,8 @@ for (country in top) {
 str(df_flat)
 
 ```
+
+
 ![This figure shows an example of how the data was flattened. This case is for number of cases since day zero for each country.](countriesleg.png)
 
 
