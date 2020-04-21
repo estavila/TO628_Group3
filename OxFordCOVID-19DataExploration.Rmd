@@ -331,15 +331,19 @@ summary(g_ratef_mod1)
 
 
 
-###Linear Regression #2
+#### Linear Regression by Country.
+We chose United States, China, Italy, and Iran since they have been hit the hardest by COVID-19. We then chose Germany and South Korea due to their exemplary responses to the situation. Lastly, we chose United Kingdom, Sweden, and India because they are either interesting cases or are taking controversial measures. 
 
 ```{r}
 library(lmtest)
 library(car)
 
 df_flat$CountryCode <- NULL
+<<<<<<< HEAD
 colnames(df_flat)
 
+=======
+>>>>>>> f8e215ca393f268aed267d4ceaf8841e867dfd8d
 ```
 
 Germany
