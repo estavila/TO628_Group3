@@ -652,7 +652,7 @@ str(df_general)
 levels(df_general$S1_IsGeneral)[1:20]
 ```
 
-## Potential Questions to Explore:
+## Questions Explored:
 
 * Which measures were most effective for which countries?
 * Predict number of cases? deaths? growth rate
