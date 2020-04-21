@@ -282,6 +282,8 @@ for (country in top) {
 str(df_flat)
 
 ```
+![This figure shows an example of how the data was flattened. This case is for number of cases since day zero for each country.](countriesleg.png)
+
 
 ### Linear Regression
 #### Death Rate
@@ -326,6 +328,8 @@ summary(g_rate_mod2)
 
 ```
 The above model indicates that closing public transportaton, restriction on internal movement, International travel controls, Fiscal Measures, emergency investment in healthcare, the interaction between closing public transport and restriction on internal movement have a positive correlation with growth rate. Meanwhile, only the interaction between closing public transport and international travel controls as well as the interaction between calceling public events and closing public transport had a negative correlation with growth rate. All other factors and interactions did not have a statisticall significant correlation with growth rate in this model.
+
+![This model seemed to tell the more detailed story, below is a graphical representation of the factors with a statistically significant correlation with growth rate.](grate_sigs.png)
 
 #### Future Growth Rate
 Looking at growth rate 12 days into the future of each measure values:
