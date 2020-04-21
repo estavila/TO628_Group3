@@ -376,11 +376,9 @@ str(df_flat)
 ```
 
 
-#### Flatten Data
+##### Flatten Data
+Reflattened data so we sould have more data points when looking at countries individually.
 ```{r ,}
-# day zero limit
-limit = 100
-
 # interval between dates captured
 interval = 2
 
@@ -642,40 +640,21 @@ summary(df_model_Italy_2)
 ```
 For Italy, School Closing, Workplace Closing, and Close Public Transportation have positive correlations with the number of confirmed cases and death increasing, whereas Fiscal Measures has a negative correlation.
 
-#### Growth Rate
-
-```{r}
-str(df_flat)
-# Run Linear Regression model. 
-g_rate_mod<-lm(GrowthRate ~ S1_School.closing +S2_Workplace.closing +S3_Cancel.public.events +S4_Close.public.transport +S5_Public.information.campaigns +S6_Restrictions.on.internal.movement +S7_International.travel.controls +S8_Fiscal.measures +S9_Monetary.measures +S10_Emergency.investment.in.health.care +S11_Investment.in.Vaccines +S12_Testing.framework +S13_Contact.tracing,  data=df_flat)
-summary(g_rate_mod)
-#residualPlots(df_flat_model)
-
-  
-```
-
-
 
 ### Explore Notes Columns
-To explore the notes data, we just peaked into one of the columns to see what kind of announcements they are using.
+To explore the notes data, we just peaked into one of the columns to see what kind of announcements they are using. We only used this data for our context, not for any specific anaylysis.
 ```{r ,}
 names(df_notes)
 str(df_notes)
-levels(df_notes$S1_Notes)[1:5]
+#example
+levels(df_notes$S1_Notes)[2:4]
 ```
 
-### Explore General Columns
-To explore the general, we just peaked into one of the columns to see what kind of announcements they are using.
-```{r ,}
-names(df_general)
-str(df_general)
-levels(df_general$S1_IsGeneral)[1:20]
-```
 
-## Question Explored:
+
+## Conclusion:
 
 * Which measures were most effective for which countries?
-Main Conclusions
 
 Most of the governments’ policies The Oxford COVID-19 Government Response Tracker has reviewed help lower the death rate, however different measures work effectively in different countries. 
 
