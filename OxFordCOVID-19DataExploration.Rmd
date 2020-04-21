@@ -632,10 +632,8 @@ summary(g_rate_mod)
   
 ```
 
-<<<<<<< HEAD
-=======
-```
->>>>>>> 92edc5e559b23d4a10fed09ce1c1dc774c90deb7
+
+
 ### Explore Notes Columns
 To explore the notes data, we just peaked into one of the columns to see what kind of announcements they are using.
 ```{r ,}
@@ -652,7 +650,15 @@ str(df_general)
 levels(df_general$S1_IsGeneral)[1:20]
 ```
 
-## Questions Explored:
+## Question Explored:
 
 * Which measures were most effective for which countries?
-* Predict number of cases? deaths? growth rate
+Main Conclusions
+
+Most of the governments’ policies The Oxford COVID-19 Government Response Tracker has reviewed help lower the death rate, however different measures work effectively in different countries. 
+
+We determined that Growth Rate decrease correlates with the closure of schools and workplace. 
+
+Avoiding unnecessary trips and mass gathering can protect people from Covid-19 expansion.  And providing monetary policy interventions helps lower the death rate.
+
+Finally, launching multiple policies at the same time is needed as it increases the efficiency of government actions.
