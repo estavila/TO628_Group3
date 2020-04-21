@@ -315,7 +315,7 @@ summary(g_rate_mod1)
 
 g_rate_mod3<-lm(GrowthRate ~ S1_School.closing+S2_Workplace.closing+S3_Cancel.public.events+S4_Close.public.transport+S5_Public.information.campaigns+S6_Restrictions.on.internal.movement+S7_International.travel.controls+S8_Fiscal.measures+S9_Monetary.measures+S10_Emergency.investment.in.health.care+S11_Investment.in.Vaccines+S12_Testing.framework+S13_Contact.tracing+S6_Restrictions.on.internal.movement*S7_International.travel.controls*S4_Close.public.transport+S1_School.closing*S2_Workplace.closing+S3_Cancel.public.events*S4_Close.public.transport,  data=df_flat)
 summary(g_rate_mod3)
-#residualPlots(g_rate_mod3)
+residualPlots(g_rate_mod3)
 
 ```
 #### Future Growth Rate
@@ -324,8 +324,7 @@ Looking at
 # Run Linear Regression model. 
 g_ratef_mod1<-lm(GrowthRateFut ~ S1_School.closing+S2_Workplace.closing+S3_Cancel.public.events+S4_Close.public.transport+S5_Public.information.campaigns+S6_Restrictions.on.internal.movement+S7_International.travel.controls+S8_Fiscal.measures+S9_Monetary.measures+S10_Emergency.investment.in.health.care+S11_Investment.in.Vaccines+S12_Testing.framework+S13_Contact.tracing,  data=df_flat)
 summary(g_ratef_mod1)
-#residualPlots(g_ratef_mod3)
-
+residualPlots(g_ratef_mod3)
 
 ```
 
@@ -333,6 +332,142 @@ summary(g_ratef_mod1)
 
 #### Linear Regression by Country.
 We chose United States, China, Italy, and Iran since they have been hit the hardest by COVID-19. We then chose Germany and South Korea due to their exemplary responses to the situation. Lastly, we chose United Kingdom, Sweden, and India because they are either interesting cases or are taking controversial measures. As for the models, we only chose factors that are significant to each country, which means that the p-values of the factors have to be less than 0.05. Since each country only has around 20-24 rows of data, it did not make sense for us to split the data into training and testing. 
+
+```{r ,}
+# create empty data frame
+df_flat <- data.frame(Date=as.Date(character()),
+                      Day = integer(),
+                     CountryName=character(), 
+                     CountryCode=character(),
+                     S1_School.closing = integer(),
+                     S2_Workplace.closing = integer(),
+                     S3_Cancel.public.events = integer(),
+                     S4_Close.public.transport = integer(),
+                     S5_Public.information.campaigns = integer(),
+                     S6_Restrictions.on.internal.movement = integer(),
+                     S7_International.travel.controls = integer(),
+                     S8_Fiscal.measures = double(),
+                     S9_Monetary.measures = double(),
+                     S10_Emergency.investment.in.health.care = double(),
+                     S11_Investment.in.Vaccines = double(),
+                     S12_Testing.framework = integer(),
+                     S13_Contact.tracing = integer(),
+                     StringencyIndexForDisplay = double(),
+                     ConfirmedCases = integer(),
+                     ConfirmedDeaths = integer(),
+                     GrowthRate = integer(),
+
+                     ConfirmedCasesFut = integer(),
+                     ConfirmedDeathsFut = integer(),
+                     GrowthRateFut = integer(),
+
+                     stringsAsFactors=FALSE) 
+
+str(df_flat)
+```
+
+
+#### Flatten Data
+```{r ,}
+# day zero limit
+limit = 100
+
+# interval between dates captured
+interval = 2
+
+# num of intervals in future
+fut = 2
+
+
+# library needed to back fill NA values
+library(zoo)
+
+# for each country in the top list
+for (country in top) {
+  # subset of data only for that country
+  df_country = subset(df, CountryName == country)
+  # get the country code for that country
+  cc = levels(factor(df_country$CountryCode))
+
+  # fill NA values with last non-NA value for that country
+  df_country$ConfirmedCases = na.locf(with(df_country, ifelse(df_country$ConfirmedCases == 'NA', NA_real_, df_country$ConfirmedCases)), fromLast = FALSE)
+  df_country$ConfirmedDeaths = na.locf(with(df_country, ifelse(df_country$ConfirmedDeaths == 'NA', NA_real_, df_country$ConfirmedDeaths)), fromLast = FALSE)
+  for (meas in measures){
+    df_country[,meas] = na.locf(with(df_country, ifelse(df_country[,meas] == 'NA', NA_real_, df_country[,meas])), fromLast = FALSE)
+  }
+  
+  # find row of zero-th day (when cases first >= limit)
+  x = Position(function(x) x > limit, df_country$ConfirmedCases)
+  
+  # remove any data prior to zero-th day
+  df_country_reset = tail(df_country, -x)
+  
+  # find dates to extract data from based on interval chosen
+  dates = sort(df_country_reset$Date)
+  dates = dates[seq(1, length(dates), interval)]
+  dates_ = head(dates,-fut)
+
+  # for every date of interest
+  for (d in seq_along(dates_)){
+    
+    # subset of data only prior to date of interest
+    df_dateFut = subset(df_country_reset, Date <= dates[d+fut])
+    df_date = subset(df_country_reset, Date <= dates[d])
+    
+    # cumulate the measures
+    cols = colSums(df_date[measures], na.rm = TRUE)
+    
+
+    # calculate growth rate
+    if (d==1){
+      g_rate = 0
+    }
+    else{
+      g_rate = as.integer(df_date$ConfirmedCases[df_date$Date == dates[d]] - df_date$ConfirmedCases[df_date$Date == dates[d-1]])
+    }
+
+    if (d ==1){
+      g_rate = 0
+    }
+    else{
+      g_rate = as.integer(df_date$ConfirmedCases[df_date$Date == dates[d]]-df_date$ConfirmedCases[df_date$Date == dates[d-1]])
+    }
+    g_rateFut = as.integer(df_dateFut$ConfirmedCases[df_dateFut$Date == dates[d+fut]]-df_dateFut$ConfirmedCases[df_dateFut$Date == dates[d+fut-1]])
+
+
+    # add data for specified date and country to dataframe
+    df_flat <- rbind(df_flat, data.frame(Date = dates[d],
+                    Day = as.integer(dates[d]-dates[1]),
+                     CountryName = country,
+                     CountryCode = cc,
+                     S1_School.closing = as.integer(cols['S1_School.closing']),
+                     S2_Workplace.closing = as.integer(cols['S2_Workplace.closing']),
+                     S3_Cancel.public.events = as.integer(cols['S3_Cancel.public.events']),
+                     S4_Close.public.transport = as.integer(cols['S4_Close.public.transport']),
+                     S5_Public.information.campaigns = as.integer(cols['S5_Public.information.campaigns']),
+                     S6_Restrictions.on.internal.movement = as.integer(cols['S6_Restrictions.on.internal.movement']),
+                     S7_International.travel.controls = as.integer(cols['S7_International.travel.controls']),
+                     S8_Fiscal.measures = cols['S8_Fiscal.measures'],
+                     S9_Monetary.measures = cols['S9_Monetary.measures'],
+                     S10_Emergency.investment.in.health.care = cols['S10_Emergency.investment.in.health.care'],
+                     S11_Investment.in.Vaccines = cols['S11_Investment.in.Vaccines'],
+                     S12_Testing.framework = as.integer(cols['S12_Testing.framework']),
+                     S13_Contact.tracing = as.integer(cols['S13_Contact.tracing']),
+                     StringencyIndexForDisplay = cols['StringencyIndexForDisplay'],
+                     ConfirmedCases = as.integer(df_date$ConfirmedCases[df_date$Date == dates[d]]),
+                     ConfirmedDeaths = as.integer(df_date$ConfirmedDeaths[df_date$Date == dates[d]]),
+                    GrowthRate = g_rate,
+                    ConfirmedCasesFut = as.integer(df_dateFut$ConfirmedCases[df_dateFut$Date == dates[d+fut]]),
+                    ConfirmedDeathsFut = as.integer(df_dateFut$ConfirmedDeaths[df_dateFut$Date == dates[d+fut]]),
+                    GrowthRateFut = g_rateFut))
+  }
+}
+
+str(df_flat)
+
+```
+
+
 
 ```{r}
 library(lmtest)
